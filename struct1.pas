@@ -1,4 +1,4 @@
-PROGRAM PR15;
+ PROGRAM PR15;
 
 var 
   inputstring: string;
@@ -11,8 +11,10 @@ var
   randomByte:Byte;
   randomW:Word;
   randomCard:Cardinal;
- // randomCh:Char;
+  randomNumber:byte;
+  randomChar:Char;
   randBool:Boolean;
+  randomInt64,random64:Int64;
   
 BEGIN
   randomize;
@@ -25,6 +27,7 @@ BEGIN
     writeln('Lower line: ', Low(Shortint));
     writeln('Upper line: ', High(Shortint));
     writeln('Byte: ', Sizeof(Shortint));
+    randomSI := Random(256) - Low(Shortint);
     randomSI := Random(256) - Low(Shortint);
     writeln('Random Value: ', randomSI);
     writeln('Succ Value: ', Succ(randomSI));
@@ -179,57 +182,53 @@ BEGIN
 		  byteValue := PByte(@randBool);
 		  for i := 0 to Sizeof(randBool) - 1 do
 			Writeln(byteValue[i]);
-		end
-	
-	
-	
-	
-	
-	{else if (inputString = 'Char') then
+		end	
+	else if (inputString = 'Char') then
 		begin
-		  writeln('Type being tested: Char');
-		  writeln('Lower line: ', ord(Low(Char)));
-		  writeln('Upper line: ', ord(High(Char)));
-		  writeln('Byte: ', Sizeof(Char));
-		  randomCh := Random(26) + 65;
-		  randomChar := Chr(randomCh);
+		  Writeln('Type being tested: Char');
+		  Writeln('Lower line: ', Ord(Low(Char)));
+		  Writeln('Upper line: ', Ord(High(Char)));
+		  Writeln('Byte: ', Sizeof(Char));
 		  
-		  writeln('Random Value: ', randomCh);
-		  writeln('Succ Value: ', ord(Succ(randomCh)));
-		  writeln('Pred Value: ', Pred(randomCh));
-		  
-		  if randomCh = High(Char) then
+		  randomNumber := Random(256);
+		  randomChar:=chr(randomNumber);
+
+		  Writeln('Random Value: ', ord(randomChar));
+		  Writeln('Succ Value: ', Ord(Succ(randomChar)));
+		  Writeln('Pred Value: ', Ord(Pred(randomChar)));
+
+		  if randomChar = High(Char) then
 			Writeln('Overflow');
-		  if randomCh = Low(Char) then
+
+		  if randomChar = Low(Char) then
 			Writeln('Underflow');
-		  
+
 		  byteValue := PByte(@randomChar);
+		  
 		  for i := 0 to Sizeof(randomChar) - 1 do
-			writeln(byteValue[i]);
-		end.
+			Writeln(byteValue[i]);
+		end
+	else
+		writeln('EROR');
+	
+{
+	else if (inputString = 'Int64') then
+		writeln('Type being tested: Int64');
+		writeln('Lower line: ', Low(Int64));
+		writeln('Upper line: ', High(Int64));
+		writeln('Size: ', Sizeof(Int64));
+		randomNumber := Random(9223372036854775807) - Random(9223372036854775807);
+		writeln('Random Value: ', randomNumber);
+		writeln('Succ Value: ', Succ(randomNumber));
+		writeln('Pred Value: ', Pred(randomNumber));
+		if randomNumber = 9223372036854775807  then
+		   writeln('overflow');
+		if randomNumber = -9223372036854775807 then
+		   writeln('overflow');
+		byteValue := PByte(@randomNumber)^;
+		for i := 0 to Sizeof(randomNumber) do
+		begin
+		   writeln(byteValue[i]);
+		end;
 }
-	
-	
-	
-  {else if (inputString = 'Int64') then
-begin
-  writeln('Type being tested: Int64 ');
-  writeln('Lower line: ', Low(Int64));
-  writeln('Upper line: ', High(Int64));
-  writeln('Byte: ', Sizeof(Int64));
-  randomI64 := Random(Int64.MaxValue - Int64.MinValue) + Int64.MinValue;
-  writeln('Random Value: ', randomI64);
-  writeln('Succ Value: ', Succ(randomI64));
-  writeln('Pred Value: ', Pred(randomI64));
-  if randomI64 = High(Int64) then
-    Writeln('overflow');
-  if randomI64 = Low(Int64) then
-    Writeln('overflow');
-  byteValue := PByte(@randomI64);
-  for i := 0 to Sizeof(randomI64) - 1 do
-  begin
-    Writeln(byteValue[i]);
-  end;
-end
-* }
 END.
