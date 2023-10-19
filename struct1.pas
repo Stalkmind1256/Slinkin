@@ -232,3 +232,32 @@ BEGIN
 		end;
 }
 END.
+//// 
+program untitled;
+
+var
+  cardValue: Cardinal;
+  byteArr: array[0..SizeOf(Cardinal)-1] of Byte;
+  i: Integer;
+
+begin
+  randomize;
+  
+  // Генерируем случайные байты для каждого байта типа Cardinal
+  for i := 0 to SizeOf(Cardinal)-1 do
+  begin
+    byteArr[i] := Random(256);
+    writeln('Byte ', i, ': ', byteArr[i]);
+  end;
+  
+  // Преобразуем байты в целое число типа Cardinal
+  cardValue := 0;
+  for i := 0 to SizeOf(Cardinal)-1 do
+  begin
+    cardValue := (cardValue shl 8) or byteArr[i];
+  end;
+  
+  writeln('Cardinal value: ', cardValue);
+  
+end.
+
