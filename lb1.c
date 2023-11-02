@@ -1,104 +1,80 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
-	int count_char=0;
-	int count_words =0;
-	int count_lines=0;
-
-void count(FILE *myfile){
-	int tek;
-	int pred=0;
-		while ((tek = fgetc(myfile)) != EOF) {
-		 count_char++;
-		 if((tek<33)&(pred>=33)){
-			 count_words++;
-			 }
-		 pred=tek;
-		 if (tek == '\n') {
-		   count_lines++;
-		}
-	}
+int main(int argc, char *argv[]){
+  FILE *myfile;
+  int cnt_bytes, cnt_words,cnt_lines;
+  int a,a1,i;
+  cnt_bytes = 0,cnt_words = 0,cnt_lines = 0;
+  a = 0, a1 = 0, i = 0;
+  int tc = 0;
+  int tw = 0;
+  int tl = 0;
+  
+  
+  
+  
+  myfile = fopen(argv[1],"r");  
+  if(myfile != NULL){
+    while(!feof(myfile)){
+      a1 = a;
+      a = fgetc(myfile);
+      if(a != EOF){
+        cnt_bytes++;
+      }
+      if((a1 >= 33) && (a < 33)){
+        cnt_words++;  
+      }
+      if(a == '\n'){
+        cnt_lines++;
+      }
+    }  
+  fclose(myfile);
+  
+  if(argc == 2){
+    printf("Количество байт: %d\n",cnt_bytes);
+    printf("Количество слов: %d\n",cnt_words);  
+    printf("Количество строк: %d\n",cnt_lines);    
+  }
+}
+else if((argc >= 1)&&(myfile == NULL)){
+  myfile = stdin;
+  while(!feof(myfile)){
+    a1 = a;
+    a = fgetc(myfile);
+    
+    if(a != EOF){
+      cnt_bytes++;
+    }
+    if((a1 >= 33) && (a < 33)){
+      cnt_words++;  
+    }
+    if(a == '\n'){
+      cnt_lines++;
+    }
+    i++;
+  }
+  if(argc == 1){
+    printf("Количество байт: %d\n",cnt_bytes);
+    printf("Количество слов: %d\n",cnt_words);  
+    printf("Количество строк: %d\n",cnt_lines);    
+  }
 }
 
-void vivod(char* arg){
-		if (!strcmp(arg,"-c")){
-			printf("\n Количество байт = %d \n",count_char);
-		}
-		if (!strcmp(arg,"-w")){
-			printf("\n Количесвто слов = %d \n",count_words);
-		}
-		if (!strcmp(arg,"-l")){
-			printf("\n Количесвто строк = %d \n",count_lines);
-		}
-		if (!strcmp(arg,"0")){
-			printf("\n Количество байт = %d \n Количесвто слов %d \n Количесвто строк %d \n",count_char, count_words, count_lines);
-		} 
-		if ((strcmp(arg,"-c"))&(strcmp(arg,"-w"))&(strcmp(arg,"-l"))&(strcmp(arg,"0"))){
-			printf("неверный аругмент \n");
-		}
-			
-	}
-
-int main(int argc, char* argv[]) {
-	FILE *file;
-
-	switch(argc){
-		case 1:
-			file=stdin;
-			count(file);
-			vivod("0");
-			break;
-		case 2:
-			if ((strcmp(argv[1],"-c"))&(strcmp(argv[1],"-w"))&(strcmp(argv[1],"-l"))){
-				file=fopen(argv[1],"r");
-				if(!file){ 
-					printf("нет такого файла \n"); 
-					return 0;
-				}else{
-					count(file);
-					vivod("0");
-				}
-			}else{
-				file=stdin;
-				count(file);
-				vivod("0");
-				}
-			break;
-		case 3: 
-			file=fopen(argv[2],"r");
-			if(!file){ 
-				printf("нет такого файла \n"); 
-				return 0;
-			}
-			count(file);
-			vivod(argv[1]);
-			break;
-		case 4: 
-			file=fopen(argv[3],"r");
-			if(!file){
-				 printf("нет такого файла \n"); 
-				 return 0;
-			}
-			count(file);
-			vivod(argv[1]);
-			vivod(argv[2]);
-			break;
-		case 5: 
-			file=fopen(argv[4],"r");
-			if(!file){
-				 printf("нет такого файла \n"); 
-				 return 0;
-			}
-			count(file);
-			vivod(argv[1]);
-			vivod(argv[2]);
-			vivod(argv[3]);
-
-			break;
-		default: printf("ошибка ввода \n"); return 0;
-	}
-fclose(file);
+for(int i = 1; i < argc;i++){
+  if((strcmp(argv[i],"-c") == 0) &&(tc == 0)){
+    printf("Количество байт = %d\n",cnt_bytes);
+    tc++;
+  }
+  if((strcmp(argv[i],"-w") == 0) &&(tw == 0)){
+    printf("Количество слов = %d\n",cnt_words);
+    tw++;
+  }
+  if((strcmp(argv[i],"-l") == 0) &&(tl == 0)){
+    printf("Количество строк = %d\n",cnt_lines);
+    tl++;
+  }
+}
 return 0;
 }
