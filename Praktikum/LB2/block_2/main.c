@@ -1,103 +1,99 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
+#include <time.h>
+
+#define FILE_NAME "secure.dat"
 
 void generate_file(int size) {
-    FILE* file = fopen("secure.dat", "wb");
+    FILE* file = fopen(FILE_NAME, "wb");
     if (file == NULL) {
-        printf("Ошибка при создании файла.\n");
+        printf("Ошибка создания файла!\n");
         exit(1);
     }
-
+    
     srand(time(NULL));
     for (int i = 0; i < size - 1; i++) {
         unsigned char byte = rand() % 255 + 1;
         fwrite(&byte, sizeof(unsigned char), 1, file);
     }
-
-    unsigned char last_byte = 0;
-    fwrite(&last_byte, sizeof(unsigned char), 1, file);
-
+    
+    unsigned char zero = 0;
+    fwrite(&zero, sizeof(unsigned char), 1, file);
+    
     fclose(file);
 }
 
-int compare_with_etalon(int size) {
-    unsigned char* etalon = (unsigned char*)malloc(size);
-    if (etalon == NULL) {
-        printf("Ошибка при выделении памяти.\n");
+void check_file(int size, int interval) {
+    unsigned char *expected = (unsigned char*) malloc(size * sizeof(unsigned char));
+    if (expected == NULL) {
+        printf("Ошибка выделения памяти!\n");
         exit(1);
     }
-    memset(etalon, 0, size);
-
-    FILE* file = fopen("secure.dat", "rb");
+    
+    FILE* file = fopen(FILE_NAME, "rb");
     if (file == NULL) {
-        printf("Ошибка при открытии файла.\n");
-        free(etalon);
+        printf("Ошибка открытия файла!\n");
         exit(1);
     }
-
-    fread(etalon, sizeof(unsigned char), size, file);
+    
+    fread(expected, sizeof(unsigned char), size, file);
     fclose(file);
-
-    int differences = 0;
-    int* positions = (int*)malloc(size * sizeof(int));
-    int current_position = 0;
-
-    for (int i = 0; i < size; i++) {
-        if (etalon[i] != 0) {
-            positions[differences] = i;
-            differences++;
-            current_position = i;
+    
+    while (1) {
+        sleep(interval);
+        
+        file = fopen(FILE_NAME, "rb");
+        if (file == NULL) {
+            printf("Ошибка открытия файла!\n");
+            exit(1);
         }
-    }
-
-    if (differences != 0) {
-        printf("Обнаружен похититель!\n");
-        printf("Позиции некорректных байтов: ");
-        for (int i = 0; i < differences; i++) {
-            printf("%d ", positions[i]);
+        
+        unsigned char *actual = (unsigned char*) malloc(size * sizeof(unsigned char));
+        if (actual == NULL) {
+            printf("Ошибка выделения памяти!\n");
+            exit(1);
         }
-        printf("\n");
-        printf("Эталонное содержимое: ");
-        for (int i = current_position - 10; i <= current_position + 10; i++) {
-            if (i >= 0 && i < size) {
-                printf("%d ", etalon[i]);
+        
+        fread(actual, sizeof(unsigned char), size, file);
+        fclose(file);
+        
+        int diff = 0;
+        for (int i = 0; i < size; i++) {
+            if (actual[i] != expected[i]) {
+                diff = 1;
+                printf("Обнаружен похититель! Позиция байта: %d, Значение: %d\n", i, actual[i]);
             }
         }
-        printf("\n");
-
-        remove("secure.dat");
-        free(etalon);
-        free(positions);
         
-        return 1;
+        if (diff) {
+            printf("Эталон:\n");
+            for (int i = 0; i < size; i++) {
+                printf("%d ", expected[i]);
+            }
+            printf("\n");
+            
+            remove(FILE_NAME);
+            free(actual);
+            free(expected);
+            exit(1);
+        }
+        
+        free(actual);
     }
-
-    free(etalon);
-    free(positions);
-
-    return 0;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char** argv) {
     if (argc != 3) {
-        printf("Использование: %s <размер файла> <интервал обновления (сек)>\n", argv[0]);
+        printf("Использование: ./main <размер файла> <интервал проверки (мс)>\n");
         return 1;
     }
-
+    
     int size = atoi(argv[1]);
     int interval = atoi(argv[2]);
-
+    
     generate_file(size);
-
-    while (1) {
-        if (compare_with_etalon(size)) {
-            break;
-        }
-        sleep(interval);
-    }
-
+    check_file(size, interval);
+    
     return 0;
 }
