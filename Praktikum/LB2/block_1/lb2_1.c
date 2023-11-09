@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/file.h>
+#define SET_FILE "set.dat"
 
 #define MAX_NUMBERS 2001
 
@@ -77,23 +78,29 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
             {
                 setNumbers[setCount++] = sourceNumbers[j];
             }
+            sleep(1);
         }
     }
-
+	sleep(3);
     WriteNumbersToFile(setFile, setNumbers, setCount);
 }
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
+    if (argc != 3)
     {
-        printf("Use: %s set_file source_file1 source_file2 ...\n", argv[0]);
+        printf("Use: %s source_file1 source_file2\n", argv[0]);
         return 0;
     }
 
-    char* setFile = argv[1];
-    int sourceCount = argc - 2;
-    char** sourceFiles = &argv[2];
+    char* setFile = SET_FILE;
+    char* sourceFiles[2];
+    int sourceCount = 2;
+     //int sourceCount = argc - 2;
+    //char** sourceFiles = &argv[2];
+
+    sourceFiles[0] = argv[1];
+    sourceFiles[1] = argv[2];
 
     int lockFile = open(setFile, O_RDWR);
     if (lockFile == -1)
@@ -116,3 +123,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
