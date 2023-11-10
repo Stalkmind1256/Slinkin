@@ -14,14 +14,14 @@ var
   randomNumber:byte;
   randomChar:Char;
   randBool:Boolean;
-  randomInt64,random64:Int64;
+  //randomInt64,random64:Int64;
   
 BEGIN
   randomize;
   WRITE('Enter data type:');
   readln(inputstring);
 
-  if (inputString = 'Shortint') then
+  if (lowercase(inputString) = 'shortint') then /// Lowercase
   begin
     writeln('Type being tested: Shortint ');
     writeln('Lower line: ', Low(Shortint));
@@ -172,13 +172,14 @@ BEGIN
 		  writeln('Succ Value: ', Succ(randBool));
 		  writeln('Pred Value: ', Pred(randBool));
 		  
-		  if randBool = High(Boolean) then
+		 if randBool = High(Boolean) then
 			Writeln('Overflow');
 		  if randBool = Low(Boolean) then
 			Writeln('Overflow');
-		  if randBool = (Low(Boolean) and High(Boolean)) then
+		
+		 { if randBool = (Low(Boolean) and High(Boolean)) then
 			Writeln('Overflow');
-		  
+		  }
 		  byteValue := PByte(@randBool);
 		  for i := 0 to Sizeof(randBool) - 1 do
 			Writeln(byteValue[i]);
@@ -209,7 +210,7 @@ BEGIN
 			Writeln(byteValue[i]);
 		end
 	else
-		writeln('EROR');
+		writeln('ERROR');
 	
 {
 	else if (inputString = 'Int64') then
@@ -231,8 +232,7 @@ BEGIN
 		   writeln(byteValue[i]);
 		end;
 }
-END.
-//// 
+END
 program untitled;
 
 var
