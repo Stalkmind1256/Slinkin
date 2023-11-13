@@ -8,7 +8,7 @@
 void generate_file(int size) {
     FILE* file = fopen(FILE_NAME, "wb");
     if (file == NULL) {
-        printf("Ошибка создания файла!\n");
+        printf("Error creating file!\n");
         exit(1);
     }
     
@@ -27,13 +27,13 @@ void generate_file(int size) {
 void check_file(int size, int interval) {
     unsigned char *expected = (unsigned char*) malloc(size * sizeof(unsigned char));
     if (expected == NULL) {
-        printf("Ошибка выделения памяти!\n");
+        printf("Memory allocation error!\n");
         exit(1);
     }
     
     FILE* file = fopen(FILE_NAME, "rb");
     if (file == NULL) {
-        printf("Ошибка открытия файла!\n");
+        printf("Error opening file!\n");
         exit(1);
     }
     
@@ -45,13 +45,13 @@ void check_file(int size, int interval) {
         
         file = fopen(FILE_NAME, "rb");
         if (file == NULL) {
-            printf("Ошибка открытия файла!\n");
+            printf("Error opening file!\n");
             exit(1);
         }
         
         unsigned char *actual = (unsigned char*) malloc(size * sizeof(unsigned char));
         if (actual == NULL) {
-            printf("Ошибка выделения памяти!\n");
+            printf("Memory allocation error!\n");
             exit(1);
         }
         
