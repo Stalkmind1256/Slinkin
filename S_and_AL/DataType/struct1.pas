@@ -233,7 +233,7 @@ BEGIN
 		end;
 }
 END
-program untitled;
+
 
 var
   cardValue: Cardinal;

@@ -5,7 +5,8 @@
 #include <sys/file.h>
 #define SET_FILE "set.dat"
 
-#define MAX_NUMBERS 2001
+#define MAX_NUMBERS 253
+
 
 int ReadNumbersFromFile(char* filename, int* numbers)
 {
@@ -78,10 +79,11 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
             {
                 setNumbers[setCount++] = sourceNumbers[j];
             }
-            sleep(1);
+            usleep(10000);
+            printf("%d\n",j);
         }
     }
-	sleep(3);
+	usleep(20000);
     WriteNumbersToFile(setFile, setNumbers, setCount);
 }
 
