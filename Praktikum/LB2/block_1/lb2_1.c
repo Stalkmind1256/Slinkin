@@ -5,7 +5,7 @@
 #include <sys/file.h>
 #define SET_FILE "set.dat"
 
-#define MAX_NUMBERS 253
+#define MAX_NUMBERS 1000
 
 
 int ReadNumbersFromFile(char* filename, int* numbers)
@@ -52,24 +52,28 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
     int setCount = ReadNumbersFromFile(setFile, setNumbers);
     if (setCount == -1)
     {
-        return;
+        setCount = 0;
     }
+
+    int numbers[MAX_NUMBERS];
+    int counts[MAX_NUMBERS];
+    int totalCount = 0;
 
     for (int i = 0; i < sourceCount; i++)
     {
-        int sourceNumbers[MAX_NUMBERS];
-        int sourceCount = ReadNumbersFromFile(sourceFiles[i], sourceNumbers);
-        if (sourceCount == -1)
+        counts[i] = ReadNumbersFromFile(sourceFiles[i], numbers);
+        if (counts[i] == -1)
         {
             continue;
         }
+        printf("Numbers from %s: ", sourceFiles[i]);
 
-        for (int j = 0; j < sourceCount; j++)
+        for (int j = 0; j < counts[i]; j++)
         {
             int found = 0;
             for (int k = 0; k < setCount; k++)
             {
-                if (sourceNumbers[j] == setNumbers[k])
+                if (numbers[j] == setNumbers[k])
                 {
                     found = 1;
                     break;
@@ -77,40 +81,40 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
             }
             if (!found)
             {
-                setNumbers[setCount++] = sourceNumbers[j];
+                setNumbers[setCount++] = numbers[j];
             }
-            usleep(10000);
-            printf("%d\n",j);
+             usleep(20000);
+                printf("%d\n",numbers[j]);
         }
+        totalCount += counts[i];
     }
 	usleep(20000);
-    WriteNumbersToFile(setFile, setNumbers, setCount);
+    WriteNumbersToFile(setFile, setNumbers, setCount); 
 }
-
 int main(int argc, char* argv[])
 {
-    if (argc != 3)
+    if (argc < 2)
     {
-        printf("Use: %s source_file1 source_file2\n", argv[0]);
+        printf("Use: %s source_file1 source_file2 ...[]\n", argv[0]);
         return 0;
     }
 
     char* setFile = SET_FILE;
-    char* sourceFiles[2];
-    int sourceCount = 2;
+    char* sourceFiles[MAX_NUMBERS];
+    int sourceCount = argc - 1;
      //int sourceCount = argc - 2;
     //char** sourceFiles = &argv[2];
-
-    sourceFiles[0] = argv[1];
-    sourceFiles[1] = argv[2];
-
+	for(int i = 1; i<= sourceCount; i++){
+			sourceFiles[i - 1] = argv[i];
+		}
+    //sourceFiles[0] = argv[1];
+    //sourceFiles[1] = argv[2];
     int lockFile = open(setFile, O_RDWR);
     if (lockFile == -1)
     {
         perror("Error opening file set.dat");
         return 0;
     }
-
     if (flock(lockFile, LOCK_EX) == -1)
     {
         perror("Error lock file set.dat");
