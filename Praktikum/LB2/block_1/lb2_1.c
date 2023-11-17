@@ -5,7 +5,7 @@
 #include <sys/file.h>
 #define SET_FILE "set.dat"
 
-#define MAX_NUMBERS 1000
+#define MAX_NUMBERS 255
 
 
 int ReadNumbersFromFile(char* filename, int* numbers)
@@ -66,7 +66,7 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
         {
             continue;
         }
-        printf("Numbers from %s: ", sourceFiles[i]);
+        printf("Numbers from %s:\n ", sourceFiles[i]);
 
         for (int j = 0; j < counts[i]; j++)
         {
@@ -83,14 +83,15 @@ void MergeSets(char* setFile, char** sourceFiles, int sourceCount)
             {
                 setNumbers[setCount++] = numbers[j];
             }
-             usleep(20000);
-                printf("%d\n",numbers[j]);
+            usleep(20000);
+            printf("%d\n", numbers[j]);
         }
         totalCount += counts[i];
     }
-	usleep(20000);
-    WriteNumbersToFile(setFile, setNumbers, setCount); 
+    usleep(20000);
+    WriteNumbersToFile(setFile, setNumbers, setCount);
 }
+
 int main(int argc, char* argv[])
 {
     if (argc < 2)
@@ -102,19 +103,20 @@ int main(int argc, char* argv[])
     char* setFile = SET_FILE;
     char* sourceFiles[MAX_NUMBERS];
     int sourceCount = argc - 1;
-     //int sourceCount = argc - 2;
-    //char** sourceFiles = &argv[2];
-	for(int i = 1; i<= sourceCount; i++){
-			sourceFiles[i - 1] = argv[i];
-		}
-    //sourceFiles[0] = argv[1];
-    //sourceFiles[1] = argv[2];
+
+    for (int i = 1; i <= sourceCount; i++) {
+        sourceFiles[i - 1] = argv[i];
+    }
+
     int lockFile = open(setFile, O_RDWR);
     if (lockFile == -1)
     {
         perror("Error opening file set.dat");
         return 0;
     }
+
+    //printf("File descriptor for set.dat: %d\n", lockFile);
+
     if (flock(lockFile, LOCK_EX) == -1)
     {
         perror("Error lock file set.dat");
@@ -129,4 +131,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
