@@ -11,7 +11,30 @@
 
 ORDWR - файл открыт для чтения и записи
 
-явные дискрипторы open файлы которые были получены с помощью функции 
-не явные 0 1 2 , тк они изначально доступны в программе без явного  открытия
+Виды дискрипторов:
+1.Явные дискрипторы open файлы которые были получены с помощью функции 
+2.Неявные 0 1 2 , тк они изначально доступны в программе без явного  открытия
 
 плохой файловый дескриптор например, один поток уже закрыл файл, а другой поток пытается получить к нему доступ.
+
+
+int lockFile = open(setFile, O_RDWR); инициализируется переменная lock для хранения дискриптора
+    if (lockFile == -1)
+    {
+        perror("Error opening file set.dat");
+        return 0;
+    }
+
+   printf("File descriptor for set.dat: %d\n", lockFile);
+
+    if (flock(lockFile, LOCK_EX) == -1)
+    {
+        perror("Error lock file set.dat");
+        close(lockFile);
+        return 0;
+    }
+
+    MergeSets(setFile, sourceFiles, sourceCount);
+
+    flock(lockFile, LOCK_UN);
+    close(lockFile);

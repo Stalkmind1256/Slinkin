@@ -1,11 +1,13 @@
-#include <stdio.h>
+ #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/file.h>
 #define SET_FILE "set.dat"
 
 #define MAX_NUMBERS 255
+#define MAX_SOURSE 20
 
 
 int ReadNumbersFromFile(char* filename, int* numbers)
@@ -101,10 +103,15 @@ int main(int argc, char* argv[])
     }
 
     char* setFile = SET_FILE;
-    char* sourceFiles[MAX_NUMBERS];
+    char* sourceFiles[MAX_SOURSE];
     int sourceCount = argc - 1;
 
+//Cannot including
     for (int i = 1; i <= sourceCount; i++) {
+		if(strcmp(argv[i], setFile) == 0){
+			printf("Error: 'set.dat' file cannot be including as a sourse file\n");
+			return 0;
+			}
         sourceFiles[i - 1] = argv[i];
     }
 
@@ -115,7 +122,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    //printf("File descriptor for set.dat: %d\n", lockFile);
+   //printf("File descriptor for set.dat: %d\n", lockFile);
 
     if (flock(lockFile, LOCK_EX) == -1)
     {
