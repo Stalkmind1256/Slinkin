@@ -21,10 +21,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 10
+#define MAXBUF 1024
+
+
 
 int main(){
-	int call_protocol, byte_read; // Созадние сокета
+	int call_protocol,bytes_read; // Созадние сокета
 	struct sockaddr_in server_info;
 	/*
 	 * typedet struct sockaddr_in{
@@ -51,25 +53,29 @@ int main(){
 	connection = connect(call_protocol,(struct sockaddr*)&server_info, sizeof(server_info));
 	if(connection == -1){
 		perror("Error with connecting server");
-	}//else{ printf("Connect :)");}
-	
-	char buffer[BUFFER_SIZE];
-	while((byte_read = read(call_protocol,buffer,BUFFER_SIZE - 1)) > 0){
-		buffer[byte_read] = '\0';
-		printf("%s",buffer);
 	}
-	if(byte_read == -1){
-		perror("Error reading response");
-		close(call_protocol);
-		return -1;
+	else{
+		printf("Connecting\n");
 	}
+	char buffer[MAXBUF];
+	printf("Enter somethink: ");
+	fgets(buffer,sizeof(buffer),stdin);
 	
-	if(byte_read == 0){
-		perror("Error closing conecting");
-	}
+	bytes_read = recv(call_protocol,buffer,MAXBUF,0);
+		if(bytes_read < 0){
+			perror("Error reading data");
+			return 1;
+			}
+	if(bytes_read == -1){
+		perror("Error reading from soxket");
+		return 1;
+		}
 	
-	int status = close(call_protocol);
-	if(status == -1){
+	
+	
+	
+	close(call_protocol);
+	if(call_protocol == -1){
 		perror("Error closing socket");	
 	}
 	
