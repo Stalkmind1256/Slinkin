@@ -6,7 +6,7 @@ uses
 var
   inputString: string;
   i: integer;
-  byteValue: array[0..1] of Byte;
+  byteValue: array[0 .. 1] of Byte;
   SI: Shortint;
   SmI: SmallInt;
   LI:Longint;
