@@ -4,7 +4,7 @@ uses
   SysUtils;
 
 var
-    bytevalue: array of byte;
+    //bytevalue: array of byte;
     i, datasize: byte;
     datatype: string;
     randomshi: Shortint;
@@ -33,9 +33,9 @@ begin
         Writeln('Upper Line: ', high(Shortint));
         Writeln('Byte: ', datasize);
         randomshi := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomshi := (randomshi shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomshi := (randomshi shl 8) or random(256);
         Writeln('Random Value: ', randomshi);
         if low(Shortint)=randomshi then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomshi));
@@ -52,9 +52,9 @@ begin
         Writeln('Upper Line: ', high(Shortint));
         Writeln('Byte: ', datasize);
         randomsmi := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        Move(bytevalue[0], randomsmi, datasize);
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomsmi := (randomsmi shl 8) or random(256);
         Writeln('Random Value: ', randomsmi);
        	if low(Smallint)=randomsmi then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomsmi));
@@ -71,9 +71,9 @@ begin
         Writeln('Upper Line: ', high(Longint));
         Writeln('Byte: ', datasize);
         randomli := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomli := (randomli shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomli := (randomli shl 8) or random(256);
         Writeln('Random Value: ', randomli);
       	if low(Longint)=randomli then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomli));
@@ -90,9 +90,9 @@ begin
         Writeln('Upper Line: ', high(Longword));
         Writeln('Byte: ', datasize);
         randomlword:=0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomlword := (randomlword shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomlword := (randomlword shl 8) or random(256);
         Writeln('Random Value: ', randomlword);
        	if low(Longword)=randomlword then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomlword));
@@ -109,9 +109,9 @@ begin
         Writeln('Upper Line: ', high(Int64));
         Writeln('Byte: ', datasize);
         randomi64 := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomi64 := (randomi64 shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomi64 := (randomi64 shl 8) or random(256);
         Writeln('Random Value: ', randomi64);
         if low(Int64)=randomi64 then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomi64));
@@ -128,9 +128,9 @@ begin
         Writeln('Upper Line: ', high(Byte));
         Writeln('Byte: ', datasize);
         randombyte := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randombyte := (randombyte shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randombyte := (randombyte shl 8) or random(256);
         Writeln('Random Value: ', randombyte);
         if low(Byte)=randombyte then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randombyte));
@@ -147,9 +147,9 @@ begin
         Writeln('Upper Line: ', high(Word));
         Writeln('Byte: ', datasize);
         randomword := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomword := (randomword shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomword := (randomword shl 8) or random(256);
         Writeln('Random Value: ', randomword);
         if low(Word)=randomword then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomword));
@@ -166,9 +166,9 @@ begin
         Writeln('Upper Line: ', high(Cardinal));
         Writeln('Byte: ', datasize);
         randomcard := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomcard := (randomcard shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomcard := (randomcard shl 8) or  random(256);
         Writeln('Random Value: ', randomcard);
         if low(Cardinal)=randomcard then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomcard));
@@ -185,9 +185,9 @@ begin
         Writeln('Upper Line: ', high(QWord));
         Writeln('Byte: ', datasize);
         randomqword := 0;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomqword := (randomqword shl 8) or bytevalue[i];
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomqword := (randomqword shl 8) or random(256);
         Writeln('Random Value: ', randomqword);
         if low(QWord)=randomqword then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: ', pred(randomqword));
@@ -204,9 +204,9 @@ begin
         Writeln('Upper Line #: ', ord(high(Char)));
         Writeln('Byte: ', datasize);
         randomchar := Chr(0);
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
-        for i := datasize-1 downto 0 do randomchar := Chr((ord(randomchar) shl 8) or bytevalue[i]);
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        for i := datasize-1 downto 0 do randomchar := Chr((ord(randomchar) shl 8) or random(256));
         Writeln('Random Value: #', ord(randomchar));
         if ord(low(Char))=ord(randomchar) then Writeln('Pred Value: overflow') 
 			else Writeln('Pred Value: #', ord(pred(randomchar)));
@@ -223,8 +223,8 @@ begin
         Writeln('Upper Line: ', high(Boolean));
         Writeln('Byte: ', datasize);
         randombool := False;
-        SetLength(bytevalue,datasize);
-        for i := 0 to datasize-1 do bytevalue[i] := random(256);
+        //SetLength(bytevalue,datasize);
+        //for i := 0 to datasize-1 do bytevalue[i] := random(256);
 		randombool:=boolean(random(2));
         Writeln('Random Value: ', randombool);
         if low(Boolean)=randombool then Writeln('Pred Value: overflow') 
