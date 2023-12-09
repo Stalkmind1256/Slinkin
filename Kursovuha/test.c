@@ -12,22 +12,30 @@
  * struct sockaddr_in  
  * connect(sd,структура,длина структуры)
  * 
- * */ 
+ * */
+ 
+ // Добавить или нет? ввод IP/port 
 #include <sys/socket.h> //Содержит прототипы функций
 #include <sys/types.h>
 #include <resolv.h>
 #include <netinet/in.h>
-#include <errno.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define MAXBUF 1024
 
 
 
 int main(){
-	int call_protocol,bytes_read; // Созадние сокета
+	
+	int call_protocol,bytes_read;
+	
 	struct sockaddr_in server_info;
+	//char input_ip[16];
+	//char in_port[6];
+	
 	/*
 	 * typedet struct sockaddr_in{
 	 * short sin_family;
@@ -38,11 +46,16 @@ int main(){
 	 * 
 	 * 
 	 * */
-	 
+	//Создание сокета 
+	//printf("Enter IP address: ");
+	//fgets(input_ip, sizeof(input_ip), stdin);
+    //input_ip[strcspn(input_ip, "\n")] = '\0';
+	
+	
 	call_protocol = socket(PF_INET,SOCK_STREAM,0);
 	if(call_protocol == -1){
 		perror("Error creating socket");
-		return -1;	
+		return 1;	
 	}
 	// Создание структуры для заполнения информации о сервере
 	server_info.sin_family = AF_INET;
@@ -57,23 +70,30 @@ int main(){
 	else{
 		printf("Connecting\n");
 	}
-	char buffer[MAXBUF];
-	printf("Enter somethink: ");
-	fgets(buffer,sizeof(buffer),stdin);
 	
-	bytes_read = recv(call_protocol,buffer,MAXBUF,0);
+	char request[MAXBUF];
+	
+	snprintf(request,sizeof(request), "GET /mywebsite/ HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
+	
+	int bytes_send  = 	send(call_protocol, request, strlen(request),0);
+	if(bytes_send == -1){
+		perror("Error dending request");
+		return 1;
+		}
+		
+	char response[MAXBUF];
+	
+	bytes_read = recv(call_protocol,response,sizeof(response),0); //recv != read контролирует работу сокета ОТВЕТ
 		if(bytes_read < 0){
 			perror("Error reading data");
 			return 1;
 			}
-	if(bytes_read == -1){
-		perror("Error reading from soxket");
-		return 1;
-		}
+	printf("Response from server:\n");
+	printf("%.*s\n",bytes_read,response);	
 	
+
 	
-	
-	
+	//Закрытик сокета
 	close(call_protocol);
 	if(call_protocol == -1){
 		perror("Error closing socket");	

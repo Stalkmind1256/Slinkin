@@ -3,7 +3,7 @@
 #include "func.c"
 
 int check_line(int number){
-	if(number !=50){
+	if(number != 20){
 		return 0;
 	}
 	else{
@@ -21,7 +21,8 @@ int check_bin(int number) {
 
 int main(){
 	
-	int result, size = 120, *mas, *indexes,beg,end;
+	int result, size = 120, *mas, *indexes, beg, end;
+	
     mas = (int *) malloc(sizeof(int) * size);
     indexes = (int *) malloc(sizeof(int) * size);
     for (int i = 0; i < size; i++)
