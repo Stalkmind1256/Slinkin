@@ -109,20 +109,27 @@
 		 return count;
 	 }
 
- char *listSumStr(char *dest, int maxsize, pnodeL1 ph, char *delimiter)
- {
-  dest[0] = '\0';
-  pnodeL1 current = ph;
-  while (current != NULL) {
-    if (strlen(dest) + strlen(current->data) < maxsize) {
-      strcat(dest, current->data);
-      if (current->pnext != NULL) {
-        strcat(dest, delimiter);
-      }
-    } else {
-      break;
+char *listSumStr(char *dest, int maxsize, pnodeL1 ph, char *delimiter)
+{
+    dest[0] = '\0';
+    pnodeL1 current = ph;
+
+    while (current != NULL) {
+        int currentLen = strlen(current->data);
+        int destLen = strlen(dest);
+
+        if (destLen + currentLen + strlen(delimiter) < maxsize) {
+            strcat(dest, current->data);
+            
+            if (current->pnext != NULL) {
+                strcat(dest, delimiter);
+            }
+        } else {
+            break;
+        }
+        
+        current = current->pnext;
     }
-    current = current->pnext;
-  }
-  return dest;;
- }
+
+    return dest;
+}

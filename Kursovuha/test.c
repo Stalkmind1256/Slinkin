@@ -59,13 +59,14 @@ int main(){
 	}
 	// Создание структуры для заполнения информации о сервере
 	server_info.sin_family = AF_INET;
-	server_info.sin_port = htons(80);
-	server_info.sin_addr.s_addr = inet_addr("127.0.0.1"); // inet_addr принимает строку и возвращает числовое значение в сетевом порядке байтов
+	server_info.sin_port = htons(23);
+	server_info.sin_addr.s_addr = inet_addr("127.0.10.1"); // inet_addr принимает строку и возвращает числовое значение в сетевом порядке байтов
 	
 	int connection;
 	connection = connect(call_protocol,(struct sockaddr*)&server_info, sizeof(server_info));
 	if(connection == -1){
 		perror("Error with connecting server");
+		return 1;
 	}
 	else{
 		printf("Connecting\n");
@@ -75,7 +76,7 @@ int main(){
 	
 	snprintf(request,sizeof(request), "GET /mywebsite/ HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
 	
-	int bytes_send  = 	send(call_protocol, request, strlen(request),0);
+	int bytes_send  = 	send(call_protocol, request, sizeof(request),0);
 	if(bytes_send == -1){
 		perror("Error dending request");
 		return 1;
