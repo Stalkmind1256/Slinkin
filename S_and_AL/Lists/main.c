@@ -38,9 +38,9 @@ int main()
 	listActionL1(head,proverka);
 	
 	char result [100];
-	char *delimiter = ",";
+	char *delimiter = "=";
 	char *mergedStr = listSumStr(result, sizeof(result),head,delimiter);
-	printf("Merged String: %s\t",mergedStr);
+	printf("Merged String: %s\n",mergedStr);
 	
 	disposeListL1(&head);
 

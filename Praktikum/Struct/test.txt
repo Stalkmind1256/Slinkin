@@ -1,0 +1,32 @@
+Smirnov
+Alexandr
+Artemovich
+M
+13.04.2003
+3456700076
+2
+11 22
+Sterhov
+Andrey
+Igorevich
+M
+13.04.2003
+34765699
+1
+29
+Ivanov
+Ivan
+Ivanovich
+M
+23.05.1965
+54976204
+1
+45
+Smirnova
+Maria
+Olegovna
+F
+34267512
+25.04.1998
+2
+22 11

@@ -3,7 +3,7 @@
 #include "func.c"
 
 int check_line(int number){
-	if(number != 20){
+	if(number % 20){
 		return 0;
 	}
 	else{
@@ -12,21 +12,26 @@ int check_line(int number){
 }
 
 int check_bin(int number) {
-    if (number > 50)
+    if (number > 15)
         return 1;
-    else if (number < 50)
+    else if (number < 15)
         return -1;
     return 0;
 }
 
 int main(){
 	
-	int result, size = 120, *mas, *indexes, beg, end;
+	int result, size = 100, *mas, *indexes, beg, end;
 	
     mas = (int *) malloc(sizeof(int) * size);
+    
     indexes = (int *) malloc(sizeof(int) * size);
-    for (int i = 0; i < size; i++)
-        mas[i] = i + 1;
+    for (int i = 0; i < size; i++){
+			mas[i] = i + 1;
+		}
+        
+        
+        
     result = line_find_one(mas, size, check_line);
     printf("Line_find_one: %d\n\n", result);
     

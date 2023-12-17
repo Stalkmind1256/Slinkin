@@ -78,7 +78,7 @@
 	disposeNodeL1(ph);
 	 }
 
- void listActionL1(pnodeL1 ph, listfunc func) /// Что с ней делать?
+ void listActionL1(pnodeL1 ph, listfunc func) 
  {
 	 pnodeL1 current = ph;
 	 while(current != NULL){
