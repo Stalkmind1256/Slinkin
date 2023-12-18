@@ -119,6 +119,7 @@ void FindParents(struct passport people[], int count, const char id_children[]) 
             if (people[i].ID_children[j] == atoi(id_children)) {
                 temp[index] = i;
                 index++;
+                FindParents(people,count,people[i].numberID);
             }
         }
     }
@@ -132,18 +133,58 @@ void FindParents(struct passport people[], int count, const char id_children[]) 
     }
 }
 
-void SurnameAll(struct passport peoples[], int count, char mas2[]){
-	int found = 0;
-	for(int i = 0; i < count; i++){
-		if(strcmp(peoples[i].surname,mas2) == 0){
-			printf("%s %s %s\n", peoples[i].surname,peoples[i].name,peoples[i].last_name);
-			found = 1;
-			}
-		}
-		if(!found){
-			printf("Not found\n");
-			}
-	}
+void SurnameAll(struct passport peoples[], int count, char mas2[]);
+int IsRelative(struct passport peoples[], int count, int index);
+int IsParent(struct passport person1, struct passport person2);
+int HaveCommonChildren(struct passport person1, struct passport person2);
+
+void SurnameAll(struct passport peoples[], int count, char mas2[]) {
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(peoples[i].surname, mas2) == 0) {
+            if (!IsRelative(peoples, count, i)) {
+                printf("%s %s %s\n", peoples[i].surname, peoples[i].name, peoples[i].last_name);
+                found = 1;
+            }
+        }
+    }
+
+    if (!found) {
+        printf("Not found\n");
+    }
+}
+int IsRelative(struct passport peoples[], int count, int index) {
+    for (int i = 0; i < count; i++) {
+        if (i != index &&
+            (IsParent(peoples[i], peoples[index]) || HaveCommonChildren(peoples[i], peoples[index]))) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int IsParent(struct passport person1, struct passport person2) {
+    for (int i = 0; i < person2.cnt_children; i++) {
+        if (person2.ID_children[i] == atoi(person1.numberID)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int HaveCommonChildren(struct passport person1, struct passport person2) {
+    for (int i = 0; i < person1.cnt_children; i++) {
+        for (int j = 0; j < person2.cnt_children; j++) {
+            if (person1.ID_children[i] == person2.ID_children[j]) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
 	
 int main() {
   setlocale(LC_ALL,"ru_RU.UTF-8");
