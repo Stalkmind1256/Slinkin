@@ -88,7 +88,7 @@
 		 }
 	 }
 
- void listOutL1(pnodeL1 ph) //вывод узлов
+ void listOutL1(pnodeL1 ph) //output
  {
 	 pnodeL1 current = ph;
 	 while(current != NULL){
@@ -98,7 +98,7 @@
 		 printf("\n");
 	 }
 
- int listCountL1(pnodeL1 ph) // Количество узлов
+ int listCountL1(pnodeL1 ph) // count
  {
 	 int count = 0;
 	 pnodeL1 current = ph;

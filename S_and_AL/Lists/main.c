@@ -6,7 +6,7 @@ int proverka(char *data){
 	int num = atoi(data);
 	int res = num * num;
 	printf("Result:%d\n",res);
-	return 1;
+	return 0;
 }
 
 
