@@ -5,9 +5,9 @@
 #include <sys/stat.h>
 
 void printHelp(){
-    printf("Утилита cml - копирование/перемещение файлов и создание ссылок\n");
-    printf("Использование:\n");
-    printf("cml [-h|-l|-m] исходный_файл результирующий_файл\n");
+    printf("Cml utility - copy/move files and create links\n");
+    printf("Usage:\n");
+    printf("cml [-h|-l|-m] source_file result_file\n");
 }
 
 int fileExists(char *filename){
@@ -29,9 +29,7 @@ int isRegularFile(char *filename){
             return 0;
         }
     } 
-    else{
-        return 0;
-    }
+    return 0;
 }
 
 int isLink(char *filename){
@@ -71,7 +69,7 @@ void copyFile(char *sourceFile, char *destFile){
     FILE *dest = fopen(destFile, "wb");
     if(dest == NULL){
         fclose(source);
-        printf("Error opening destination file.\n");
+        printf("Error opening result file.\n");
         return;
     }
     
@@ -114,7 +112,7 @@ void createSymbolicLink(char *sourceFile, char *link){
 }
 
 int main(int argc, char *argv[]){
-    if(argc > 3 && argc < 4){
+    if(argc < 3 || argc > 4){
         printf("Error: incorrect number of parameters\n");
         printHelp(); 
         return 1;
@@ -166,7 +164,6 @@ int main(int argc, char *argv[]){
         createHardLinkCustom(sourceFile, destFile);
     }
     else if(strcmp(options, "-l") == 0){
-
 
         createSymbolicLink(sourceFile, destFile);
     }
