@@ -26,6 +26,7 @@ int main(){
     mas = (int *) malloc(sizeof(int) * size);
     
     indexes = (int *) malloc(sizeof(int) * size);
+    
     for (int i = 0; i < size; i++){
 			mas[i] = i + 1;
 		}
@@ -45,7 +46,7 @@ int main(){
     result = bin_find_one(mas, size, check_bin);
     printf("Bin_find_one: %d\n\n", result);
     
-     result = bin_find_all(mas, size, check_bin, &beg, &end);
+    result = bin_find_all(mas, size, check_bin, &beg, &end);
     printf("Bin_find_all: %d\n", result);
 	free(mas);
 	free(indexes);
