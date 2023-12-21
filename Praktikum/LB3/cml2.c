@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
     
-    char *options = "";
+    char *options = argv[1];
     char *sourceFile;
     char *destFile;
     
@@ -127,10 +127,18 @@ int main(int argc, char *argv[]){
         destFile = argv[2];
     }
     else{
-        options = argv[1];
+		if(argc == 4 && strcmp(options, "-h") != 0 && strcmp(options, "-l") != 0 && strcmp(options, "-m") != 0){
+        printf("Error: invalid option\n");
+        printHelp();
+        return 1;
+      }else{
+		  //options = argv[1];
         sourceFile = argv[2];
         destFile = argv[3];
-    }
+    
+		  } 
+        
+}
     
   /*  if(argc == 4 && strcmp(options, "-h") != 0 && strcmp(options, "-l") != 0 && strcmp(options, "-m") != 0){
         printf("Error: invalid option\n");
