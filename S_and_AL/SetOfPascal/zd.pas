@@ -86,116 +86,130 @@ End;
 
 
 Begin
-	WriteLn('1 - Создать множество');
-	WriteLn('2 - Проверить число во множестве');
-	WriteLn('3 - Добавить множество во множество');
-	WriteLn('4 - Удалить множество из множества');
-	WriteLn('5 - Пересечь множества');
-	WriteLn('6 - Добавить число во множество');
-	WriteLn('7 - Удалить число из множества');
-	WriteLn('8 - Вывести множество');
-	WriteLn('9 - Выйти из программы');
-	ReadLn(Number);
-	While Number <> 9 Do
-	Begin
-		BytePtrTwo := @SByteTwo;
-		For I := 0 To SizeOf(ByteSet) - 1 Do
-			BytePtrTwo[I] := 0;
-		If Number = 1 Then
-		Begin
-			Write('Числа через пробел: ');
-			ReadLn(Line);
-			ByteArray := Line.Split(' ');
-			BytePtrOne := @SByte;
-			For I := 0 To SizeOf(ByteSet) - 1 Do
-				BytePtrOne[I] := 0;
-			If Length(ByteArray) <= 256 Then
-				For I := 0 To Length(ByteArray) - 1 Do
-					SByte := IncludeSet(Byte(StrToInt(ByteArray[I])), SByte)
-			Else
-				For I := 0 To 255 Do
-					SByte := IncludeSet(Byte(StrToInt(ByteArray[I])), SByte);
-		End
-		ELse If Number = 2 Then
-		Begin
-			Write('Проверяемое число: ');
-			ReadLn(Value);
-			If InSet(Value, SByte) Then
-				WriteLn('Элемент принадлежит множеству')
-			Else
-				WriteLn('Элемент не принадлежит множеству');
-		End
-		Else If Number = 3 Then
-		Begin
-			Write('Числа через пробел во втором множестве: ');
-			ReadLn(Line);
-			ByteArray := Line.Split(' ');
-			If Length(ByteArray) <= 256 Then
-				For I := 0 To Length(ByteArray) - 1 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
-			Else
-				For I := 0 To 255 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
-			SByte := AddSet(SByte, SByteTwo);
-		End
-		Else If Number = 4 Then
-		Begin
-			Write('Числа через пробел во втором множестве: ');
-			ReadLn(Line);
-			ByteArray := Line.Split(' ');
-			If Length(ByteArray) <= 256 Then
-				For I := 0 To Length(ByteArray) - 1 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
-			Else
-				For I := 0 To 255 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
-			SByte := SubSet(SByte, SByteTwo);
-		End
-		Else If Number = 5 Then
-		Begin
-			Write('Числа через пробел во втором множестве: ');
-			ReadLn(Line);
-			ByteArray := Line.Split(' ');
-			If Length(ByteArray) <= 256 Then
-				For I := 0 To Length(ByteArray) - 1 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
-			Else
-				For I := 0 To 255 Do
-					SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
-			SByte := MulSet(SByte, SByteTwo);
-		End
-		Else If Number = 6 Then
-		Begin
-			Write('Добавляемое число: ');
-			ReadLn(Value);
-			SByte := IncludeSet(Value, SByte)
-		End
-		Else If Number = 7 Then
-		Begin
-			Write('Удаляемое число: ');
-			ReadLn(Value);
-			SByte := ExcludeSet(Value, SByte)
-		End
-		Else If Number = 8 Then
-		Begin
-			Write('Множество: { ');
-			For I := 0 To 255 Do
-				If InSet(I, SByte) Then
-					Write(I, ' ');
-			WriteLn('}');
-		End
-		Else
-		WriteLn('Число не соответствует диапазону');
-		WriteLn('1 - Создать множество');
-		WriteLn('2 - Проверить число во множестве');
-		WriteLn('3 - Добавить множество во множество');
-		WriteLn('4 - Удалить множество из множества');
-		WriteLn('5 - Пересечь множества');
-		WriteLn('6 - Добавить число во множество');
-		WriteLn('7 - Удалить число из множества');
-		WriteLn('8 - Вывести множество');
-		WriteLn('9 - Выйти из программы');
-		ReadLn(Number);
-	End;
-	WriteLn('Выход');
+  WriteLn('1 - Создать множество');
+  WriteLn('2 - Проверить число во множестве');
+  WriteLn('3 - Добавить множество во множество');
+  WriteLn('4 - Удалить множество из множества');
+  WriteLn('5 - Пересечь множества');
+  WriteLn('6 - Добавить число во множество');
+  WriteLn('7 - Удалить число из множества');
+  WriteLn('8 - Вывести множество');
+  WriteLn('9 - Выйти из программы');
+  ReadLn(Number);
+  
+  While Number <> 9 do
+  begin
+    BytePtrTwo := @SByteTwo;
+    for I := 0 to SizeOf(ByteSet) - 1 do
+      BytePtrTwo[I] := 0;
+    
+    case Number Of
+      1:begin
+        Write('Числа через пробел: ');
+        ReadLn(Line);
+        ByteArray := Line.Split(' ');
+        BytePtrOne := @SByte;
+        for I := 0 to SizeOf(ByteSet) - 1 do
+			BytePtrOne[I] := 0;
+        if Length(ByteArray) <= 256 then
+          for I := 0 to Length(ByteArray) - 1 do
+            SByte := IncludeSet(Byte(StrToInt(ByteArray[I])), SByte)
+        else
+          for I := 0 to 255 do
+            SByte := IncludeSet(Byte(StrToInt(ByteArray[I])), SByte);
+      end;
+      
+      2:
+      begin
+        Write('Проверяемое число: ');
+        ReadLn(Value);
+        if InSet(Value, SByte) then
+          WriteLn('Элемент принадлежит множеству')
+        else
+          WriteLn('Элемент не принадлежит множеству');
+      end;
+      
+      3:
+      begin
+        Write('Числа через пробел во втором множестве: ');
+        ReadLn(Line);
+        ByteArray := Line.Split(' ');
+        if Length(ByteArray) <= 256 then
+          for I := 0 to Length(ByteArray) - 1 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
+        else
+          for I := 0 to 255 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
+        SByte := AddSet(SByte, SByteTwo);
+      end;
+      
+      4:
+      begin
+        Write('Числа через пробел во втором множестве: ');
+        ReadLn(Line);
+        ByteArray := Line.Split(' ');
+        if Length(ByteArray) <= 256 then
+          for I := 0 To Length(ByteArray) - 1 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
+        else
+          for I := 0 to 255 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
+        SByte := SubSet(SByte, SByteTwo);
+      end;
+      
+      5:
+      begin
+        Write('Числа через пробел во втором множестве: ');
+        ReadLn(Line);
+        ByteArray := Line.Split(' ');
+        if Length(ByteArray) <= 256 then
+          for I := 0 to Length(ByteArray) - 1 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo)
+        else
+          for I := 0 to 255 do
+            SByteTwo := IncludeSet(Byte(StrToInt(ByteArray[I])), SByteTwo);
+        SByte := MulSet(SByte, SByteTwo);
+      end;
+      
+      6:
+      begin
+        Write('Добавляемое число: ');
+        ReadLn(Value);
+        SByte := IncludeSet(Value, SByte);
+      end;
+      
+      7:
+      begin
+        Write('Удаляемое число: ');
+        ReadLn(Value);
+        SByte := ExcludeSet(Value, SByte);
+      end;
+      
+      8:
+      begin
+        Write('Множество: { ');
+        for I := 0 to 255 do
+          if InSet(I, SByte) then
+            Write(I, ' ');
+        WriteLn('}');
+      end;
+      
+      else
+        WriteLn('Число не соответствует диапазону');
+    end;
+    
+    WriteLn;
+    WriteLn('1 - Создать множество');
+    WriteLn('2 - Проверить число во множестве');
+    WriteLn('3 - Добавить множество во множество');
+    WriteLn('4 - Удалить множество из множества');
+    WriteLn('5 - Пересечь множества');
+    WriteLn('6 - Добавить число во множество');
+    WriteLn('7 - Удалить число из множества');
+    WriteLn('8 - Вывести множество');
+    WriteLn('9 - Выйти из программы');
+    ReadLn(Number);
+  end;
+  
+  WriteLn('Выход');
 End.
