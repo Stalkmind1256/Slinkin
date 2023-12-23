@@ -52,10 +52,12 @@ int confirmDeletion(char *filename){
     printf("File %s exists. Do you want to delete it? (y/n): ", filename);
     scanf(" %c", &choice);
     if(choice == 'y' || choice == 'Y'){
+        unlink(filename);
         return 1;
     }
     else{
-        return 0;
+        printf("error\n");
+		    return 0;
     }
 }
 
@@ -132,39 +134,35 @@ int main(int argc, char *argv[]){
         printHelp();
         return 1;
       }else{
-		  //options = argv[1];
+		options = argv[1];
         sourceFile = argv[2];
         destFile = argv[3];
     
 		  } 
         
 }
-    
-  /*  if(argc == 4 && strcmp(options, "-h") != 0 && strcmp(options, "-l") != 0 && strcmp(options, "-m") != 0){
-        printf("Error: invalid option\n");
-        printHelp();
-        return 1;
-    }
-    */
     if(!fileExists(sourceFile)){
         printf("Error: source file does not exist\n");
         return 1;
     }
+    if(!isRegularFile(sourceFile) && !isLink(sourceFile)){ // Добавлено условие для проверки, является ли файл обычным файлом или ссылкой
+        printf("Error: source file is not a regular file or a link\n");
+        return 1;
+    }
     
     if(fileExists(destFile)){
-        if(isRegularFile(destFile) || isLink(destFile)){
-            if(confirmDeletion(destFile)){
-                unlink(destFile);
-            }
-            else{
+        if(!isRegularFile(destFile) && !isLink(destFile)){ // Добавлено условие для проверки, является ли файл обычным файлом или ссылкой
+    
+     printf("Error: destination file is not a regular file or a link\n");
+            return 1;
+        }
+        else{
+            if(!confirmDeletion(destFile)){ // Исправлено dest -> destFile
                 return 0;
             }
         }
-        else{
-            printf("Error: destination file is not a regular file or link\n");
-            return 1;
-        }
     }
+    
     if(argc == 3 ){
 		 copyFile(sourceFile, destFile);
 		}

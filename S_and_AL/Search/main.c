@@ -48,6 +48,7 @@ int main(){
     
     result = bin_find_all(mas, size, check_bin, &beg, &end);
     printf("Bin_find_all: %d\n", result);
+    printf("Find_count: %d\n", find_count);
 	free(mas);
 	free(indexes);
 	return 0;

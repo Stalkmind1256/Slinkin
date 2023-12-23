@@ -1,3 +1,4 @@
+// файл для готового hhtp клиента
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <resolv.h>

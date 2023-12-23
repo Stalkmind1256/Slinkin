@@ -14,7 +14,9 @@
  * 
  * */
  
- // Добавить или нет? ввод IP/port 
+ // Добавить или нет? ввод IP/port
+ // Нужен ли POST запрос?
+  
 #include <sys/socket.h> //Содержит прототипы функций
 #include <sys/types.h>
 #include <resolv.h>
