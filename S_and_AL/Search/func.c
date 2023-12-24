@@ -10,7 +10,6 @@ int line_find_one(const int src[], int src_size, testfunc func){
 			return i;
 			}
 		}
-	printf("Find count:%d\n",find_count);
 	return -1;
 	}
 
@@ -28,7 +27,7 @@ int line_find_all(const int src[], int src_size,  testfunc func,int result[], in
 				 }
 			}
 		}
-		printf("Find_count: %d\n", find_count);
+		//printf("Find_count: %d\n", find_count);
 		return counter;			  
 	}
 
@@ -47,7 +46,7 @@ int bin_find_one(const int src[], int src_size, testfunc func) {
             return middle;
         }
     }
-    printf("Find_count: %d\n", find_count);
+    //printf("Find_count: %d\n", find_count);
     return -1;
 }
 
@@ -74,10 +73,10 @@ int bin_find_all(const int src[], int src_size, testfunc func, int *res_beg, int
                     break;
                 res_end++;
             }
-            printf("Find_count: %d\n", find_count);
+            //printf("Find_count: %d\n", find_count);
             return *res_end - *res_beg + 1;
         }
     }
-    printf("Find_count: %d\n", find_count);
+    //printf("Find_count: %d\n", find_count);
     return 0;
 }

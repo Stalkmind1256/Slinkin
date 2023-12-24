@@ -145,19 +145,19 @@ int main(int argc, char *argv[]){
         printf("Error: source file does not exist\n");
         return 1;
     }
-    if(!isRegularFile(sourceFile) && !isLink(sourceFile)){ // Добавлено условие для проверки, является ли файл обычным файлом или ссылкой
+    if(!isRegularFile(sourceFile) && !isLink(sourceFile)){
         printf("Error: source file is not a regular file or a link\n");
         return 1;
     }
     
     if(fileExists(destFile)){
-        if(!isRegularFile(destFile) && !isLink(destFile)){ // Добавлено условие для проверки, является ли файл обычным файлом или ссылкой
+        if(!isRegularFile(destFile) && !isLink(destFile)){ 
     
      printf("Error: destination file is not a regular file or a link\n");
             return 1;
         }
         else{
-            if(!confirmDeletion(destFile)){ // Исправлено dest -> destFile
+            if(!confirmDeletion(destFile)){ 
                 return 0;
             }
         }

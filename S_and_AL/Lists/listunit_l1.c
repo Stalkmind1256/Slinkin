@@ -46,12 +46,14 @@
   return p;
  }
 
- void disposeNodeL1(pnodeL1 *pn)
- {
-	 free((*pn)->data);
-	 free(*pn);
-	 *pn = NULL;
- }
+void disposeNodeL1(pnodeL1 *pn)
+{
+   if (pn != NULL && *pn != NULL) {
+      free((*pn)->data);
+      free(*pn);
+      *pn = NULL;
+   }
+}
 
  pnodeL1 deleteAfterNodeL1(pnodeL1 pn)
  {
@@ -77,16 +79,16 @@
 	disposeAfterNodeL1(*ph);
 	disposeNodeL1(ph);
 	 }
-
- void listActionL1(pnodeL1 ph, listfunc func) 
- {
-	 pnodeL1 current = ph;
-	 while(current != NULL){
-		int result =  func(current->data);
-		printf("Result function for Node%d\n",result);
-		 current = current->pnext;
-		 }
-	 }
+void listActionL1(pnodeL1 ph, listfunc func) {
+    pnodeL1 current = ph;
+    int index = 0;
+    while (current != NULL) {
+        int result = func(current->data);
+        printf("Result function for Node %d: %d\n", index, result);
+        current = current->pnext;
+        index++;
+    }
+}
 
  void listOutL1(pnodeL1 ph) //output
  {
