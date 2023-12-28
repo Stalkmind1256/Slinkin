@@ -79,17 +79,14 @@ int main(){
 	//snprintf(request,sizeof(request), "GET /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
 	//printf("%s",request);
 	
-	int bytes_send  = 	send(call_protocol, request, sizeof(request),0);
-	if(bytes_send == -1){
-		perror("Error dending request");
-		return 1;
-		}
 		
 	char response[MAXBUF];
 	char method[4]; // Добавление запроса PUT
 	printf("Enter method\n");
 	printf("1. GET\n");
-	printf("2. PUT\n");
+	printf("2. HEAD\n");
+	printf("3. DELETE\n");
+	printf("4. POST\n");
 	printf("Method number: ");
 	fgets(method,sizeof(method),stdin);
 	
@@ -99,33 +96,40 @@ int main(){
     
 	switch(method[0]){
 		case '1':
-			snprintf(request,sizeof(request), "GET /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+			snprintf(request,sizeof(request), "GET /mywebsite/ HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");break;
 		case '2':
-			snprintf(request,sizeof(request), "PUT /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+			snprintf(request,sizeof(request), "HEAD /mywebsite/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+		case '3':
+			snprintf(request,sizeof(request), "DELETE /mywebsite/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+		case '4':
+			snprintf(request,sizeof(request), "POST /mywebsite/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
 		default:printf("Invalid method number\n");
+		
 		close(call_protocol);
+		if (call_protocol == -1) {
+			perror("Error closing socket");
+		}
 		return 1;		
 }
 	printf("%s",request); 
     
+    int bytes_send  = 	send(call_protocol, request, sizeof(request),0);
+	if(bytes_send == -1){
+		perror("Error dending request");
+		return 1;
+		}
+    
     
 	
-	bytes_read = recv(call_protocol,response,sizeof(response),0); //recv != read контролирует работу сокета ОТВЕТ
-		if(bytes_read < 0){
-			perror("Error reading data");
-			return 1;
-			}
-	printf("Response from server:\n");
-	printf("%.*s\n",bytes_read,response);	
-	
+   bytes_read = recv(call_protocol, response, sizeof(response), 0);
+    if (bytes_read < 0) {
+        perror("Error reading data");
+        return 1;
+    }
+    printf("Response from server:\n");
+    printf("%.*s\n", bytes_read, response);
 
-	
-	//Закрытик сокета
-	close(call_protocol);
-	if(call_protocol == -1){
-		perror("Error closing socket");	
-	}
-	
-	
-	return 0;
+    
+
+    return 0;
 }
