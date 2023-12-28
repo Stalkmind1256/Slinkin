@@ -76,7 +76,8 @@ int main(){
 	
 	char request[MAXBUF];
 	
-	snprintf(request,sizeof(request), "GET /mywebsite/ HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
+	//snprintf(request,sizeof(request), "GET /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
+	//printf("%s",request);
 	
 	int bytes_send  = 	send(call_protocol, request, sizeof(request),0);
 	if(bytes_send == -1){
@@ -85,6 +86,29 @@ int main(){
 		}
 		
 	char response[MAXBUF];
+	char method[4]; // Добавление запроса PUT
+	printf("Enter method\n");
+	printf("1. GET\n");
+	printf("2. PUT\n");
+	printf("Method number: ");
+	fgets(method,sizeof(method),stdin);
+	
+	if (method[strlen(method) - 1] == '\n') {
+        method[strlen(method) - 1] = '\0';
+    }
+    
+	switch(method[0]){
+		case '1':
+			snprintf(request,sizeof(request), "GET /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+		case '2':
+			snprintf(request,sizeof(request), "PUT /html/index.html/HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");break;
+		default:printf("Invalid method number\n");
+		close(call_protocol);
+		return 1;		
+}
+	printf("%s",request); 
+    
+    
 	
 	bytes_read = recv(call_protocol,response,sizeof(response),0); //recv != read контролирует работу сокета ОТВЕТ
 		if(bytes_read < 0){
