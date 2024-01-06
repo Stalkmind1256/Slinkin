@@ -1,6 +1,4 @@
-
 // Создание http клиента
-
 //Клиентский алгоритм
 /*
  * Создание сокета + 
@@ -9,14 +7,8 @@
  * Чтение и отображение сообщенией
  * Разрыв соединения
  * 
- * int socket(domain, type, protocol);
- * struct sockaddr_in  
- * connect(sd,структура,длина структуры)
- * 
  * */
 
- // Добавить или нет? ввод IP/port
- // Нужен ли POST запрос?
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -30,11 +22,6 @@
 
 #define MAXBUF 1024
 
-//bool check_valid_ip(const char* ip){
-	//	struct sockaddr_in sa;
-	//	return inet_pton(AF_INET, ip, &(sa.sin_addr)) != 0;
-	//}
-
 
 int main() {
     int socket_descriptor, bytes_read;
@@ -43,39 +30,22 @@ int main() {
     struct sockaddr_in server_info;
 	char input_ip[16];
 	char input_port[6];
-
-	/*
-	 * typedet struct sockaddr_in{
-	 * short sin_family;
-	 * unsigned short  sin_port;
-	 * struct in_addr sin_addr;
-	 * char sin_zero[8];
-	 * }server_info;
-	 * 
-*/
+	
+  socket_descriptor = socket(PF_INET, SOCK_STREAM, 0);
+    if (socket_descriptor == -1) {
+        perror("Error creating socket");
+        return 1;  
+    }
+    
 	printf("Enter IP address: ");
 	fgets(input_ip, sizeof(input_ip), stdin);
     input_ip[strcspn(input_ip, "\n")] = '\0';
-    
-  /*  while(!check_valid_ip(input_ip)){
-		printf("Invalid IP addres: Please enter a valid IP address: ");
-		fgets(input_ip,sizeof(input_ip),stdin);
-		input_ip[strcspn(input_ip, "\n")] = '\0';
-	}
-    */
-    
+       
     
     printf("Enter PORT address: ");
 	fgets(input_port, sizeof(input_port), stdin);
     input_port[strcspn(input_port, "\n")] = '\0';
     
-  
-    socket_descriptor = socket(PF_INET, SOCK_STREAM, 0);
-    if (socket_descriptor == -1) {
-        perror("Error creating socket");
-        return 1;  
-    }
-  
     server_info.sin_family = AF_INET;
     server_info.sin_port = htons(atoi(input_port));
     server_info.sin_addr.s_addr = inet_addr(input_ip);
@@ -112,7 +82,7 @@ int main() {
     }
     
     
-     if (strcmp(method, "8") == 0) {
+     if (strcmp(method, "8") == 0){
 		 printf("disconnect\n");
             break;
         }
@@ -120,13 +90,13 @@ int main() {
     
     switch(method[0]) {
         case '1':
-            snprintf(request, sizeof(request), "GET /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");// РАботает 
+            snprintf(request, sizeof(request), "GET /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");
             break;
         case '2':
-            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");// РАботает 
+            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost"); 
             break;
         case '3':
-            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");// РАботает 
+            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost"); 
             break;
         case '4':
             snprintf(request, sizeof(request), "POST /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 14\r\n\r\nHello world!!!\r\n\r\n", "localhost");
@@ -165,13 +135,11 @@ int main() {
     printf("%.*s\n", bytes_read, response);
 		
 	}
-		
-  
+		 
     close(socket_descriptor);
     if (socket_descriptor == -1) {
         perror("Error closing socket");
     }
 		
-
     return 0;
 }

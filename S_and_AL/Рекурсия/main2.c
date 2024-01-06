@@ -1,56 +1,64 @@
 #include <stdio.h>
 
-char a[9][14] = {
-    "0001010101001",
-    "0001010101001",
-    "0001010101001",
-    "0001010101001",
-    "0001010101001",
-    "1111010101001",
-    "0001000101001",
-    "0001010101001",
-    "0001010101001"
+#define MAX_X 14
+#define MAX_Y 9
+
+char a[MAX_Y][MAX_X] = {
+    "0011100",
+    "1001101",
+    "1010010",
+    "0000000",
+    "1111100",
 };
 
+int max_depth = 0;
+int current_depth = 0;
+
 void printArray() {
-    for (int i = 0; i < sizeof(a) / sizeof(a[0]); i++) {
+    for (int i = 0; i < MAX_Y; i++) {
         printf("%s\n", a[i]);
     }
     printf("============================\n");
 }
 
-void paint(int x, int y, int depth) {
-    char kek[9 * 14][2];
-    int front = 0;
-    int next = 0;
+void paint(int x, int y) {
+    int glub_rec = current_depth;
+    int max_glub_rec = max_depth;
 
-    if (x < 0 || x >= sizeof(a[0]) || y < 0 || y >= sizeof(a) / sizeof(a[0]) || a[y][x] == '1')
-        return;
-    a[y][x] = '1';
-
-    printf("Iteration: (%d, %d), Depth: %d\n", x, y, depth);
-    printArray();
-
-    paint(x + 1, y, depth + 1);
-
-    int i = x + 1;
-    while (i <= sizeof(a[0]) && a[y][i - 1] != '1') {
-        a[y][i - 1] = '1';
-        kek[next][0] = i;
-        kek[next][1] = y;
-        next++;
-        i++;
+    glub_rec++;
+    if (glub_rec > max_glub_rec) {
+        max_glub_rec = glub_rec;
     }
 
-    paint(x, y + 1, depth + 1);
-    paint(x - 1, y, depth + 1);
-    paint(x, y - 1, depth + 1);
+    while (1) {
+        if (x < 0 || x >= MAX_X || y < 0 || y >= MAX_Y || a[y][x] != '0') {
+            glub_rec--;
+            return;
+        }
+
+        printArray();
+        printf("-----------------\n");
+        a[y][x] = '-';
+
+        paint(x + 1, y);
+        paint(x, y + 1);
+        paint(x - 1, y);
+
+        y--;
+
+        printf("REC = %d\nMAX_REC = %d\n", glub_rec, max_glub_rec);
+    }
+
+    glub_rec--;
 }
 
 int main() {
     printArray();
-    paint(0, 0, 0);
+    paint(0, 0);
     printf("------------------------\n");
     printArray();
+
+    printf("Maximum depth of recursion: %d\n", max_depth);
+
     return 0;
 }
