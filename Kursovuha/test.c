@@ -22,34 +22,30 @@
 
 #define MAXBUF 1024
 
-
 int main() {
     int socket_descriptor, bytes_read;
-  
-    
     struct sockaddr_in server_info;
-	char input_ip[16];
-	char input_port[6];
-	
-  socket_descriptor = socket(PF_INET, SOCK_STREAM, 0);
+    char input_ip[16];
+    char input_port[6];
+
+    socket_descriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_descriptor == -1) {
         perror("Error creating socket");
-        return 1;  
+        return 1;
     }
-    
-	printf("Enter IP address: ");
-	fgets(input_ip, sizeof(input_ip), stdin);
+
+    printf("Enter IP address: ");
+    fgets(input_ip, sizeof(input_ip), stdin);
     input_ip[strcspn(input_ip, "\n")] = '\0';
-       
-    
+
     printf("Enter PORT address: ");
-	fgets(input_port, sizeof(input_port), stdin);
+    fgets(input_port, sizeof(input_port), stdin);
     input_port[strcspn(input_port, "\n")] = '\0';
-    
+
     server_info.sin_family = AF_INET;
     server_info.sin_port = htons(atoi(input_port));
     server_info.sin_addr.s_addr = inet_addr(input_ip);
-  
+
     int connection = connect(socket_descriptor, (struct sockaddr*)&server_info, sizeof(server_info));
     if (connection == -1) {
         perror("Error connecting to server");
@@ -57,46 +53,35 @@ int main() {
     } else {
         printf("Connected\n");
     }
-  
+
     char request[MAXBUF];
-  
     char response[MAXBUF];
     char method[8];
-    
-    while(true){
-		printf("Enter method\n");
-		printf("1. GET\n");
-		printf("2. HEAD\n");
-		printf("3. OPTIONS\n");
-		printf("4. POST\n");
-		printf("5. TRACE\n");
-		printf("6. PUT\n");
-		printf("7. DELETE\n");
-		printf("8. EXIT\n");
-		printf("Method number: ");
-		fgets(method, sizeof(method), stdin);
-		
-		
-		if (method[strlen(method) - 1] == '\n') {
-			method[strlen(method) - 1] = '\0';
+
+    printf("Enter method\n");
+    printf("1. GET\n");
+    printf("2. HEAD\n");
+    printf("3. OPTIONS\n");
+    printf("4. POST\n");
+    printf("5. TRACE\n");
+    printf("6. PUT\n");
+    printf("7. DELETE\n");
+    printf("Method number: ");
+    fgets(method, sizeof(method), stdin);
+
+    if (method[strlen(method) - 1] == '\n') {
+        method[strlen(method) - 1] = '\0';
     }
-    
-    
-     if (strcmp(method, "8") == 0){
-		 printf("disconnect\n");
-            break;
-        }
-    
-    
-    switch(method[0]) {
+
+    switch (method[0]) {
         case '1':
             snprintf(request, sizeof(request), "GET /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");
             break;
         case '2':
-            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost"); 
+            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");
             break;
         case '3':
-            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost"); 
+            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
             break;
         case '4':
             snprintf(request, sizeof(request), "POST /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 14\r\n\r\nHello world!!!\r\n\r\n", "localhost");
@@ -105,41 +90,34 @@ int main() {
             snprintf(request, sizeof(request), "TRACE /mywebsite/ HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
             break;
         case '6':
-			snprintf(request, sizeof(request), "PUT /mywebsite/put.php HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: 15\r\n\r\nHello, Server!\r\n");
-			break;
-		case '7':
-			snprintf(request, sizeof(request), "DELETE /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
-			break;	
+            snprintf(request, sizeof(request), "PUT /mywebsite/put.php HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: 15\r\n\r\nHello, Server!\r\n");
+            break;
+        case '7':
+            snprintf(request, sizeof(request), "DELETE /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
+            break;
         default:
             printf("Invalid method number\n");
-            close(socket_descriptor);
-            if (socket_descriptor == -1) {
-                perror("Error closing socket");
-            }
-            return 1;    
+            break;
     }
-    
-     int bytes_sent = send(socket_descriptor, request, strlen(request), 0);
-	 if (bytes_sent == -1){
-			perror("Error sending request");
-			return 1;
-	}
-    
-	bytes_read = recv(socket_descriptor, response, sizeof(response), 0);
+
+    int bytes_sent = send(socket_descriptor, request, strlen(request), 0);
+    if (bytes_sent == -1) {
+        perror("Error sending request");
+    }
+
+    bytes_read = recv(socket_descriptor, response, sizeof(response), 0);
     if (bytes_read < 0) {
         perror("Error reading data");
-        return 1;
+    } else if (bytes_read == 0) {
+        printf("Connection closed by server\n");
     }
-  
+
     printf("Response from server:\n");
     printf("%.*s\n", bytes_read, response);
-		
-	}
-		 
     close(socket_descriptor);
     if (socket_descriptor == -1) {
         perror("Error closing socket");
     }
-		
+
     return 0;
 }

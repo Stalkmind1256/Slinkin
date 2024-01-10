@@ -4,8 +4,8 @@
 #include <string.h>
 
 
-  pnodeL1 createNodeL1(char *data) {
-  pnodeL1 newNode = (pnodeL1)malloc(sizeof(tnodeL1));
+pnodeL1 createNodeL1(char *data) {
+pnodeL1 newNode = (pnodeL1)malloc(sizeof(tnodeL1));
   if (newNode != NULL) {
     newNode->data = (char*)malloc(strlen(data) + 1);
     strcpy(newNode->data, data);
@@ -57,12 +57,21 @@ void disposeNodeL1(pnodeL1 *pn)
 
  pnodeL1 deleteAfterNodeL1(pnodeL1 pn)
  {
-	 pnodeL1 nodeTodelete = pn->pnext;
-	 if(nodeTodelete != NULL){
+	 //pnodeL1 nodeTodelete = pn->pnext;
+	// if(nodeTodelete != NULL){
+		// pn->pnext = nodeTodelete->pnext;
+		// free(nodeTodelete);
+		 //disposeNodeL1(&nodeTodelete);		 
+ // return pn->pnext;
+	 if(pn != NULL && pn->pnext != NULL){
+		 pnodeL1 nodeTodelete = pn->pnext;
 		 pn->pnext = nodeTodelete->pnext;
-		 disposeNodeL1(&nodeTodelete);
+		 nodeTodelete->pnext = NULL;
+		 return nodeTodelete;
+		 //disposeNodeL1(&nodeTodelete);
 		 }
-  return pn->pnext;
+  
+  return  NULL;
  }
 
  void disposeAfterNodeL1(pnodeL1 pn)
@@ -94,7 +103,7 @@ void listActionL1(pnodeL1 ph, listfunc func) {
  {
 	 pnodeL1 current = ph;
 	 while(current != NULL){
-		 printf("%s",current->data);
+		 printf("%s ",current->data);
 		 current = current->pnext;
 		 }
 		 printf("\n");
