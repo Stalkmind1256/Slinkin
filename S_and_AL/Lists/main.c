@@ -36,7 +36,6 @@ int main()
 			printf("not free node\n");
 			}
 	*/		
-	//disposeListL1(&head);
 	
 	
 	
@@ -48,10 +47,10 @@ int main()
 	printf("Processing list:\n");
 	listActionL1(head,proverka);
 	
-	//char result [100];
-	//char *delimiter = "=";
-	//char *mergedStr = listSumStr(result, sizeof(result),head,delimiter);
-	//printf("Merged String: %s\n",mergedStr);
+	char result [100];
+	char *delimiter = "=";
+	char *mergedStr = listSumStr(result, sizeof(result),head,delimiter);
+	printf("Merged String: %s\n",mergedStr);
 	
 	disposeListL1(&head);
 	
