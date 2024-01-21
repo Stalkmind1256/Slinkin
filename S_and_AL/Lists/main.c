@@ -38,7 +38,7 @@ int main()
 	
 	
 	
-	listOutL1(head);
+	//listOutL1(head);
 	
 	int count = listCountL1(head);
 	printf("count of Node:%d\n",count);
