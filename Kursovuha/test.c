@@ -1,18 +1,6 @@
-// Создание http клиента
-//Клиентский алгоритм
-/*
- * Создание сокета + 
- * Определение адреса сервера +
- * Подключение +
- * Чтение и отображение сообщенией
- * Разрыв соединения
- * 
- * */
-
-
+#include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <resolv.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -66,22 +54,26 @@ int main() {
     printf("5. TRACE\n");
     printf("6. PUT\n");
     printf("7. DELETE\n");
+    printf("8. EXIT\n");
     printf("Method number: ");
     fgets(method, sizeof(method), stdin);
+    printf("--------------------------\n");
+    printf("HEADERS ACTIV\n");
+    printf("--------------------------\n");
 
     if (method[strlen(method) - 1] == '\n') {
         method[strlen(method) - 1] = '\0';
     }
 
-    switch (method[0]) {
+    switch(method[0]) {
         case '1':
-            snprintf(request, sizeof(request), "GET /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");
+            sprintf(request, "GET /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\nUser-Agent: Google\r\n\r\n", "localhost");
             break;
         case '2':
-            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost");
+            snprintf(request, sizeof(request), "HEAD /mywebsite/put.php HTTP/1.1\r\nHost: %s\r\n\r\n", "localhost"); 
             break;
         case '3':
-            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
+            snprintf(request, sizeof(request), "OPTIONS /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost"); 
             break;
         case '4':
             snprintf(request, sizeof(request), "POST /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 14\r\n\r\nHello world!!!\r\n\r\n", "localhost");
@@ -94,26 +86,76 @@ int main() {
             break;
         case '7':
             snprintf(request, sizeof(request), "DELETE /mywebsite/put.php HTTP/1.1\r\nHost:%s\r\n\r\n", "localhost");
-            break;
+            break;  
         default:
             printf("Invalid method number\n");
-            break;
+            close(socket_descriptor);
+            if (socket_descriptor == -1) {
+                perror("Error closing socket");
+            }
+            return 1;    
     }
 
     int bytes_sent = send(socket_descriptor, request, strlen(request), 0);
     if (bytes_sent == -1) {
         perror("Error sending request");
+        return 1;
     }
 
-    bytes_read = recv(socket_descriptor, response, sizeof(response), 0);
-    if (bytes_read < 0) {
-        perror("Error reading data");
-    } else if (bytes_read == 0) {
-        printf("Connection closed by server\n");
-    }
+    bytes_read = recv(socket_descriptor, response, sizeof(response) - 1, 0);
+	if (bytes_read < 0) {
+		perror("Error reading data");
+		return 1;
+	}
+	response[bytes_read] = '\0';
 
-    printf("Response from server:\n");
-    printf("%.*s\n", bytes_read, response);
+    //Обработка заголовка User-Agent из ответа
+	char* userAgentHeader = strstr(response, "User-Agent: ");
+	if (userAgentHeader != NULL) {  
+    char* lineEnd = strchr(userAgentHeader, '\r');
+    if (lineEnd != NULL) {
+        int userAgentHeaderLength = lineEnd - (userAgentHeader + strlen("User-Agent: "));
+        
+        // Выделение динамической памяти для хранения значения User-Agent
+        char* userAgentValue = (char*)malloc((userAgentHeaderLength + 1) * sizeof(char));
+        strncpy(userAgentValue, userAgentHeader + strlen("User-Agent: "), userAgentHeaderLength);
+        userAgentValue[userAgentHeaderLength] = '\0';
+
+        printf("User-Agent Header: %s\n", userAgentValue);
+
+        // Освобождение выделенной динамической памяти
+        free(userAgentValue);
+    }
+	else {
+		printf("User-Agent Header Not Found\n");
+	}
+}
+
+	char* hostHeader = strstr(response, "Host: ");
+	if (hostHeader != NULL) {
+    char* lineEnd = strchr(hostHeader, '\r');
+    if (lineEnd != NULL) {
+        int hostHeaderLength = lineEnd - (hostHeader + strlen("Host: "));
+        
+        // Выделение динамической памяти для хранения значения заголовка Host
+        char* hostValue = (char*)malloc((hostHeaderLength + 1) * sizeof(char));
+        strncpy(hostValue, hostHeader + strlen("Host: "), hostHeaderLength);
+        hostValue[hostHeaderLength] = '\0';
+
+        printf("Host: %s\n", hostValue);
+
+        // Освобождение выделенной динамической памяти
+        free(hostValue);
+    }
+	}
+	else {
+		printf("Host Header Not Found\n");
+	}
+
+    // Вывод ответа от сервера
+   printf("Response from server:\n");
+	printf("%s\n", response);
+
     close(socket_descriptor);
     if (socket_descriptor == -1) {
         perror("Error closing socket");

@@ -44,4 +44,3 @@ typedef struct tnodeL1
  char *listSumStr(char *dest, int maxsize, pnodeL1 ph, char *delimiter);  
 
 #endif // LISTUNIT_1
-

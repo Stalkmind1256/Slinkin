@@ -147,20 +147,16 @@ BEGIN
 	write('newSByte: '); 
 	print(newSByte); 
 	writeln;
-
 	
 	writeln('addSet(SByte,newSByte)');
 	resSByte:=addSet(SByte,newSByte);
 	print(resSByte);
 	writeln;
 
-
-	
 	writeln('subSet(SByte,newSByte)');
 	resSByte:=subSet(SByte,newSByte);
 	print(resSByte);
 	writeln;
-
 	
 	writeln('mulSet(SByte,newSByte)');
 	resSByte:=mulSet(SByte,newSByte);

@@ -16,12 +16,8 @@ pnodeL1 newNode = (pnodeL1)malloc(sizeof(tnodeL1));
 
  pnodeL1 addFirstNodeL1(pnodeL1 *ph, pnodeL1 p)
  {
-	if(*ph == NULL){
-		*ph = p;
-	}else{
-		p->pnext= *ph;
-		*ph = p;	
-	}
+	p->pnext = *ph;
+	*ph = p;
   return p;
  }
 
@@ -76,18 +72,22 @@ void disposeNodeL1(pnodeL1 *pn)
 
  void disposeAfterNodeL1(pnodeL1 pn)
  {
-	pnodeL1 nodeToDelete = pn->pnext;
-		while (nodeToDelete != NULL){
-			pn->pnext = nodeToDelete->pnext;
-			disposeNodeL1(&nodeToDelete);
-			nodeToDelete = pn->pnext;
-		}
+	if (pn != NULL && pn->pnext != NULL) {
+        pnodeL1 nodeToDelete = pn->pnext;
+        pn->pnext = nodeToDelete->pnext;
+        disposeNodeL1(&nodeToDelete);
+       
+    }
 }
- void disposeListL1(pnodeL1 *ph)
- {
-	disposeAfterNodeL1(*ph);
-	disposeNodeL1(ph);
-	 }
+ void disposeListL1(pnodeL1 *ph) {
+    while (*ph != NULL) {
+        pnodeL1 nodeToDelete = *ph;
+        *ph = (*ph)->pnext;
+        free(nodeToDelete->data);
+        free(nodeToDelete);
+    }
+    *ph = NULL;
+}
 void listActionL1(pnodeL1 ph, listfunc func) {
     pnodeL1 current = ph;
     int index = 0;
