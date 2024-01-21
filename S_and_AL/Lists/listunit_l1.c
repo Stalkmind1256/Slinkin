@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+//rfrfrrf
 pnodeL1 createNodeL1(char *data) {
 pnodeL1 newNode = (pnodeL1)malloc(sizeof(tnodeL1));
   if (newNode != NULL) {
