@@ -34,8 +34,6 @@ void paint(int x,int y)
 		paint(x+1,y);
 		paint(x,y+1);
 		paint(x-1,y);
-		
-		
 		y--;
 		
 		printf("REC = %d\nMAX_REC = %d\n",glub_rec,max_glub_rec);

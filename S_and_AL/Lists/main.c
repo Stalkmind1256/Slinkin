@@ -38,7 +38,7 @@ int main()
 	
 	
 	
-	//listOutL1(head);
+	listOutL1(head);
 	
 	int count = listCountL1(head);
 	printf("count of Node:%d\n",count);
@@ -46,7 +46,7 @@ int main()
 	//printf("Processing list:\n");
 	//listActionL1(head,proverka);
 	
-	//char result [100];
+	//char result [50];
 	//char *delimiter = "=";
 	//char *mergedStr = listSumStr(result, sizeof(result),head,delimiter);
 	//printf("Merged String: %s\n",mergedStr);

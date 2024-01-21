@@ -117,51 +117,79 @@ BEGIN
 	writeln;
 	write('SByte2: ');
 	print(SByte2);
-	writeln;
-	
+	writeln;	
 	writeln('inSet(22,SByte)');
 	writeln(inSet(22,SByte));
 	writeln('inSet(11,SByte)');
 	writeln(inSet(11,SByte));
-	writeln;
-	
+	writeln;	
 	writeln('includeSet(107,SByte)');
 	SByte:=includeSet(107,SByte);
 	write('SByte: ');print(SByte);
 	writeln;
-
-	writeln;
-	
+	writeln;	
 	writeln('excludeSet(5,SByte)');			
 	SByte:=excludeSet(5,SByte);
 	write('SByte: ');print(SByte);
 	writeln;
-
-	writeln;
-	
+	writeln;	
 	newArray:=[4,77,105,107,48];
 	newSByte:=create(newArray);
 	write('SByte: '); 
 	print(SByte); 
 	writeln;
-	write('newSByte: '); 
+	write('newSByte: ');
+	writeln; 
 	print(newSByte); 
-	writeln;
-	
+	writeln;	
 	writeln('addSet(SByte,newSByte)');
+	writeln;
 	resSByte:=addSet(SByte,newSByte);
 	print(resSByte);
 	writeln;
-
 	writeln('subSet(SByte,newSByte)');
+	writeln;
 	resSByte:=subSet(SByte,newSByte);
 	print(resSByte);
 	writeln;
-	
 	writeln('mulSet(SByte,newSByte)');
+	writeln;
 	resSByte:=mulSet(SByte,newSByte);
 	print(resSByte);
 	writeln;
-
+	////Проверка
+	writeln('=====================');
+	writeln('PROVERKA');
+	writeln('=====================');
+	writeln('22 in SByte');
+	writeln(22 in SByte);
+	writeln('11 in SByte');
+	writeln(11 in SByte);
+	writeln;
+	include(SByte2,107);
+	write('SByte2: ');
+	print(SByte2);
+	writeln;
+	writeln('exclude(SByte2,5)');			
+	exclude(SByte2,5);;
+	write('SByte2: ');
+	print(SByte2);
+	writeln;
+	writeln;                     
+    writeln('SByte+newSByte');
+	resSByte:=SByte+newSByte;
+	print(resSByte);
+	writeln;
+	writeln;
+	writeln('SByte-newSByte');
+	resSByte:=SByte-newSByte;
+	print(resSByte);
+	writeln;
+	writeln;         
+	writeln('SByte*newSByte');
+	resSByte:=SByte*newSByte;
+	print(resSByte);
+	writeln;
+	writeln;             
 	
 END. 

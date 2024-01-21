@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//rfrfrrf
+
 pnodeL1 createNodeL1(char *data) {
 pnodeL1 newNode = (pnodeL1)malloc(sizeof(tnodeL1));
   if (newNode != NULL) {
@@ -120,25 +120,29 @@ void listActionL1(pnodeL1 ph, listfunc func) {
 		 return count;
 	 }
 
-char *listSumStr(char *dest, int maxsize, pnodeL1 ph, char *delimiter)
-{
+char* listSumStr(char* dest, int maxsize, pnodeL1 ph, char* delimiter) {
+    if (maxsize == 0 || dest == NULL) {
+        return NULL;
+    }
+
     dest[0] = '\0';
     pnodeL1 current = ph;
 
     while (current != NULL) {
         int currentLen = strlen(current->data);
         int destLen = strlen(dest);
+        int delimiterLen = strlen(delimiter);
 
-        if (destLen + currentLen + strlen(delimiter) < maxsize) {
+        if (destLen + delimiterLen + currentLen < maxsize) {
             strcat(dest, current->data);
-            
+
             if (current->pnext != NULL) {
                 strcat(dest, delimiter);
             }
         } else {
             break;
         }
-        
+
         current = current->pnext;
     }
 
