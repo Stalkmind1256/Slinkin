@@ -56,5 +56,6 @@ int main(int argc, char **argv)
 	paint(x,y);
 	print(a, MAX_X, MAX_Y);
 	printf("MAX_GLUB_REC = %d\n",max_glub_rec);
+	//free(a);
 	return 0;
 }
