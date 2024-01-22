@@ -3,7 +3,7 @@
 char a[9][14] = {
 "0001010101001",
 "0001010101001",
-"0001010101001",
+"0000010101001",
 "0001010101001",
 "0001010101001",
 "1111010101001",
@@ -34,19 +34,19 @@ void paint(int x, int y) {
             return;
         }
 
-        a[y][x] = '1';
-        //current_depth++;
+        a[y][x] = '*';
         paint(x + 1, y);
         paint(x, y + 1);
         paint(x - 1, y);
         y--;
         
     
-        printf("Iteration: (%d, %d), Depth: %d\n", x, y, current_depth);
-        printArray();
+        
     }
-  
-    current_depth--;
+     current_depth--;
+	printf("Iteration: (%d, %d), Depth: %d\n", x, y, current_depth);
+    printArray();
+   
 }
 
 int main() {

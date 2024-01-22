@@ -88,6 +88,14 @@ begin
 	Write('}');
 end;
 
+procedure print2(bset:ByteSet);
+var i:byte;
+begin
+	Write('{{ ');
+	for i in bset do Write(i, ' ');
+	Write('}}');
+end;
+
 function create(masiv:array of integer):ByteSet;
 var i:byte;
 	bset:ByteSet;
@@ -114,9 +122,11 @@ BEGIN
 	SByte2:=create(ByteArray);
 	write('SByte: ');
 	print(SByte);
+	print2(SByte);
 	writeln;
 	write('SByte2: ');
 	print(SByte2);
+	print2(SByte2);
 	writeln;	
 	writeln('inSet(22,SByte)');
 	writeln(inSet(22,SByte));

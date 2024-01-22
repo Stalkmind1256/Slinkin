@@ -23,7 +23,7 @@ int main()
 	//pnodeL1 node4 = createNodeL1("44");
 	//insertAfterNodeL1(node2,node4);
 	
-	//addLastNodeL1(&head, deleteAfterNodeL1(head));
+	addLastNodeL1(&head, deleteAfterNodeL1(head));
 	
 
 	//disposeAfterNodeL1(head);
@@ -46,11 +46,11 @@ int main()
 	//printf("Processing list:\n");
 	//listActionL1(head,proverka);
 	
-	//char result [50];
-	//char *delimiter = "=";
-	//char *mergedStr = listSumStr(result, sizeof(result),head,delimiter);
-	//printf("Merged String: %s\n",mergedStr);
+
+	char dest[255] = "";
+	listSumStr(dest, 255, head, "=");
 	
+	printf("Merged String:%s\n", dest);
 	disposeListL1(&head);
 	
   return 0;

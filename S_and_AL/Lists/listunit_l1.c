@@ -121,30 +121,40 @@ void listActionL1(pnodeL1 ph, listfunc func) {
 	 }
 
 char* listSumStr(char* dest, int maxsize, pnodeL1 ph, char* delimiter) {
-    if (maxsize == 0 || dest == NULL) {
-        return NULL;
-    }
+   // if (maxsize == 0 || dest == NULL) {
+     //   return NULL;
+    //}
 
-    dest[0] = '\0';
+    //dest[0] = '\0';
     pnodeL1 current = ph;
-
-    while (current != NULL) {
-        int currentLen = strlen(current->data);
-        int destLen = strlen(dest);
-        int delimiterLen = strlen(delimiter);
-
-        if (destLen + delimiterLen + currentLen < maxsize) {
-            strcat(dest, current->data);
-
-            if (current->pnext != NULL) {
-                strcat(dest, delimiter);
+    int count = 0;
+    int i;
+    while(count < maxsize){
+		 if (current != NULL) {
+            for (i = 0; i < strlen(current->data); i++) {
+                strncat(dest, &(current->data[i]), 1);
+                count++;
+                if (count == maxsize) {
+                    return dest;
+                }
             }
-        } else {
-            break;
-        }
-
+			if (current->pnext != NULL)
+			for (i = 0; i < strlen(delimiter); i++) {
+				strncat(dest, &(delimiter[i]), 1);
+				count++;
+				if (count == maxsize) {
+					return dest;
+				}
+			}
+  
         current = current->pnext;
-    }
+			}
+			else{
+				return dest;
+				}
+		}
+		return NULL;
+	}
+    
 
-    return dest;
-}
+
