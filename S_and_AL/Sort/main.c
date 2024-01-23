@@ -11,7 +11,7 @@ int compare(const void* a, const void* b) {
 
 void BubbleSort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     char* arr = (char*)base;
-    size_t i, j;
+    int i, j;
     for (i = 0; i < num - 1; i++) {
         for (j = 0; j < num - 1 - i; j++) {
             if (compare(arr + j * size, arr + (j + 1) * size) > 0) {
@@ -26,12 +26,12 @@ void BubbleSort(void* base, size_t num, size_t size, int (*compare)(const void*,
 
 void InsertSort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     char* arr = (char*)base;
-    size_t i, j;
+    int i, j;
     for (i = 1; i < num; i++) {
         char temp[size];
         memcpy(temp, arr + i * size, size);
         j = i - 1;
-        while (j != (size_t)-1 && compare(arr + j * size, temp) > 0) {
+        while ((j != 1) && compare(arr + j * size, temp) > 0) {
             memcpy(arr + (j + 1) * size, arr + j * size, size);
             j--;
         }
@@ -70,7 +70,7 @@ void QuickSort(void* base, size_t num, size_t size, int (*compare)(const void*, 
 		
     int arr1[] = {55, 7, 9, 11, 77};
     int arr2[] = {55, 77, 9, 11, 77};
-    int arr3[] = {55, 77, 99, 11, 77};
+    int arr3[] = {107, 55, 22, 11, 44};
     size_t arrSize = sizeof(arr1) / sizeof(arr1[0]);
 
     printf("Unsorted array:\n"); 
