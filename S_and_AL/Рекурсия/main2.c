@@ -3,8 +3,8 @@
 char a[9][14] = {
 "0001010101001",
 "0001010101001",
-"0000010101001",
 "0001010101001",
+"0000010101001",
 "0001010101001",
 "1111010101001",
 "0001000101001",
@@ -13,7 +13,8 @@ char a[9][14] = {
 };
 
 int max_depth = 0;
-int current_depth = 0;
+int depth = 0;
+//int current_depth = 0;
 
 void printArray() {
     for (int i = 0; i < sizeof(a) / sizeof(a[0]); i++) {
@@ -22,36 +23,34 @@ void printArray() {
     printf("============================\n");
 }
 
-void paint(int x, int y) {
-    current_depth++;
-    if (current_depth > max_depth) {
-        max_depth = current_depth;
+void paint(int x, int y, int depth) {
+	depth++;
+	if(depth > max_depth){
+		max_depth = depth;
+		}
+	while(1){
+		 if (y < 0 || y >= sizeof(a) / sizeof(a[0]) || (x < 0 || x >= sizeof(a[0]))   || a[y][x] != '0') {
+        return;
     }
-    
-    while (1) {
-        if (x < 0 || x >= sizeof(a[0]) || y < 0 || y >= sizeof(a) / sizeof(a[0]) || a[y][x] != '0') {
-            current_depth--;
-            return;
-        }
-
-        a[y][x] = '*';
-        paint(x + 1, y);
-        paint(x, y + 1);
-        paint(x - 1, y);
-        y--;
-        
-    
-        
-    }
-     current_depth--;
-	printf("Iteration: (%d, %d), Depth: %d\n", x, y, current_depth);
-    printArray();
+    a[y][x] = '1';
+    //current_depth++
+    paint(x + 1, y,depth);
+    paint(x, y + 1,depth);
+    paint(x - 1, y,depth);
+    //paint(x, y - 1,depth);
+    y--;
+		
+		}
    
+    
+	//printf("Iteration: (%d, %d), Depth: %d\n", x, y, max_depth);
+    //printArray();
+    //max_depth++;
 }
 
 int main() {
     printArray();
-    paint(0, 0);
+    paint(0, 0,0);
     printf("------------------------\n");
     printArray();
 
