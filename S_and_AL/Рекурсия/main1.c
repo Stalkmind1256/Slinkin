@@ -1,19 +1,19 @@
 #include <stdio.h>
 
 char a[9][14] = {
-"0001010101001",
-"0001010101001",
-"0001010101001",
-"0000010101001",
-"0001010101001",
 "1111010101001",
-"0001000101001",
+"1011010101001",
+"0001010101001",
+"1011010101001",
+"0100101010100",
+"1111010101001",
+"0001010101001",
 "0001010101001",
 "0001010101001"
 };
 
 int max_depth = 0;
-int depth = 0;
+//int depth = 0;
 //int current_depth = 0;
 
 void printArray() {
@@ -29,9 +29,11 @@ void paint(int x, int y, int depth) {
 		max_depth = depth;
 		}
     if (y < 0 || y >= sizeof(a) / sizeof(a[0]) || (x < 0 || x >= sizeof(a[0]))   || a[y][x] != '0') {
+		//depth--;
         return;
+        
     }
-    a[y][x] = '1';
+    a[y][x] = '$';
     //current_depth++
     paint(x + 1, y,depth);
     paint(x, y + 1,depth);
@@ -41,11 +43,11 @@ void paint(int x, int y, int depth) {
 	//printf("Iteration: (%d, %d), Depth: %d\n", x, y, max_depth);
     //printArray();
     //max_depth++;
+    //depth--;
 }
-
 int main() {
     printArray();
-    paint(0, 0,0);
+    paint(1, 2,0);
     printf("------------------------\n");
     printArray();
 
