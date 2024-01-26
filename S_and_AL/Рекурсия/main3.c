@@ -1,13 +1,13 @@
 #include <stdio.h>
 
 char a[9][14] = {
-"1111010101001",
-"1011110101001",
-"0000010101001",
+"1111110101001",
 "1011010101001",
-"0100101010100",
-"1111010101001",
-"0001010101001",
+"0001011111001",
+"1011000111001",
+"0001000011100",
+"1011011110001",
+"0001110101001",
 "0001010101001",
 "0001010101001"
 };
@@ -33,32 +33,32 @@ void paint(int x, int y, int depth)
 		return;
 	a[y][x] = '*';
 	
-	int leftX, lx, rightX, rx;
+	int rx,lx;
 	
 	rx=x;
-	rightX = rx;
+	//rightX = rx;
 	while(!(y < 0 || y >= sizeof(a) / sizeof(a[0]) || (rx < 0 || rx >= sizeof(a[0]))   || a[y][rx + 1] != '0')){
 		rx++;
 		a[y][rx]='*';
-		rightX = rx;
+		//rightX = rx;
 	}
 	
 	lx=x;
-	leftX = lx;	
+	//leftX = lx;	
 	while(!(y < 0 || y >= sizeof(a) / sizeof(a[0]) || (lx < 0 || lx >= sizeof(a[0]))   || a[y][lx - 1] != '0')){
 		lx--;
 		a[y][lx]='*';
-		leftX = lx;	
+		//leftX = lx;	
     }
     
-    for(int x=leftX; x<=rightX; x++){
+    for(int x=lx; x<=rx; x++){
 		paint(x, y+1, depth);
     	paint(x, y-1, depth);
 	}
 }
 int main() {
     printArray();
-    paint(1, 2,0);
+    paint(5,3 ,0);
     printf("------------------------\n");
     printArray();
 
