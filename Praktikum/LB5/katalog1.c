@@ -19,6 +19,10 @@ void listDir(char *path, int depth) {
     }
 
     while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
         char fullPath[1024];
         sprintf(fullPath, "%s/%s", path, entry->d_name);
 
@@ -54,7 +58,7 @@ void listDir(char *path, int depth) {
                 break;
         }
 
-        printf(" | Owner: %s | Group: %s | Permissions: %o\n",
+        printf(" : Owner: %s : Group: %s : Permissions: %o\n",
                getpwuid(fileStat.st_uid)->pw_name,
                getgrgid(fileStat.st_gid)->gr_name,
                fileStat.st_mode & 0777);
@@ -79,3 +83,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
