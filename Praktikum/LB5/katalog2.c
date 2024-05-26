@@ -1,120 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <errno.h>
 
-void copyDir(const char* src, const char* dest);
-void copyFile(const char* src, const char* dest, mode_t mode);
-void copySymlink(const char* src, const char* dest);
-void createEmptyFile(const char* dest, mode_t mode);
 
-int main() {
-    char name[255];
-    printf("Enter directory name: ");
-    scanf("%s", name);
-    copyDir(name, "new");
-    return 0;
-}
-
-void copyDir(const char* src, const char* dest) {
-    struct stat st;
-    struct dirent* entry;
-    DIR* dir = opendir(src);
-
-    if (dir == NULL) {
-        printf("Unable to open directory '%s'\n", src);
+void simpleCopy(char *srcDir, char *destDir) {
+    DIR *dirPoint;
+    struct dirent *dirEntry;
+    struct stat statBuf;
+    char srcPath[PATH_MAX], destPath[PATH_MAX];
+    
+    if (stat(srcDir, &statBuf) != 0 || mkdir(destDir, statBuf.st_mode) != 0) {
+        perror("Error creating destination directory");
         return;
     }
 
-    if (mkdir(dest, 0755) == -1 && errno != EEXIST) {
-        printf("Error creating directory: %s\n", dest);
-        closedir(dir);
+
+    if ((dirPoint = opendir(srcDir)) == NULL) {
+        perror("Error opening source directory");
         return;
     }
 
-    while ((entry = readdir(dir)) != NULL) {
-        char srcPath[PATH_MAX];
-        char destPath[PATH_MAX];
+    while ((dirEntry = readdir(dirPoint)) != NULL) {
+        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..")) continue;
+        
+        snprintf(srcPath, PATH_MAX, "%s/%s", srcDir, dirEntry->d_name);
+        snprintf(destPath, PATH_MAX, "%s/%s", destDir, dirEntry->d_name);
 
-        snprintf(srcPath, sizeof(srcPath), "%s/%s", src, entry->d_name);
-        snprintf(destPath, sizeof(destPath), "%s/%s", dest, entry->d_name);
-
-        if (lstat(srcPath, &st) == -1) {
-            printf("Cannot get file stat: %s\n", srcPath);
+        if (lstat(srcPath, &statBuf) == -1) {
+            perror("Error getting status of file/directory");
             continue;
         }
 
-        if (S_ISREG(st.st_mode)) {
-            copyFile(srcPath, destPath, st.st_mode);
-        } else if (S_ISDIR(st.st_mode)) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                copyDir(srcPath, destPath);
+        if (S_ISDIR(statBuf.st_mode)) {
+            simpleCopy(srcPath, destPath);
+        } else if (S_ISLNK(statBuf.st_mode)) {
+            char linkPath[PATH_MAX];
+            ssize_t linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
+            if (linkSize != -1) {
+                linkPath[linkSize] = '\0';
+                symlink(linkPath, destPath);
+            } else {
+                perror("Error reading symlink");
             }
-        } else if (S_ISLNK(st.st_mode)) {
-            copySymlink(srcPath, destPath);
-        } else {
-            createEmptyFile(destPath, st.st_mode);
+        } else if (S_ISREG(statBuf.st_mode)) {
+            int fileDest = open(destPath, O_WRONLY | O_CREAT | O_TRUNC, statBuf.st_mode);
+            if (fileDest >= 0) close(fileDest);
+            else perror("Error creating file");
         }
     }
 
-    closedir(dir);
+    closedir(dirPoint);
 }
 
-void copyFile(const char* src, const char* dest, mode_t mode) {
-    int srcFd, destFd;
-    char buffer[4096];
-    ssize_t bytesRead;
+int main() {
+    char srcDir[255];
+    printf("Enter the directory to copy: ");
+    scanf("%s", srcDir);
+    simpleCopy(srcDir, "SimpleCopyDir");
 
-    srcFd = open(src, O_RDONLY);
-    if (srcFd == -1) {
-        printf("Error opening file: %s\n", src);
-        return;
-    }
+    printf("Directory copied successfully.\n");
 
-    destFd = open(dest, O_WRONLY | O_CREAT | O_TRUNC, mode);
-    if (destFd == -1) {
-        printf("Error creating file: %s\n", dest);
-        close(srcFd);
-        return;
-    }
-
-    while ((bytesRead = read(srcFd, buffer, sizeof(buffer))) > 0) {
-		    write(destFd, buffer, bytesRead);
-    }
-
-    close(srcFd);
-    close(destFd);
+    return 0;
 }
 
-void copySymlink(const char* src, const char* dest) {
-    char target[PATH_MAX];
-    ssize_t len;
-
-    len = readlink(src, target, sizeof(target) - 1);
-    if (len == -1) {
-        printf("Error reading symbolic link: %s\n", src);
-        return;
-    }
-
-    target[len] = '\0';
-
-    if (symlink(target, dest) == -1) {
-        printf("Error creating symbolic link: %s\n", dest);
-        return;
-    }
-}
-
-void createEmptyFile(const char* dest, mode_t mode) {
-    int fd = open(dest, O_CREAT | O_TRUNC, mode);
-    if (fd == -1) {
-        printf("Error creating empty file: %s\n", dest);
-        return;
-    }
-
-    close(fd);
-}
