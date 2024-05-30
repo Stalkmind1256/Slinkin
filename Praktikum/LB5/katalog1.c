@@ -26,7 +26,7 @@ void listDir(char *path, int depth) {
         char fullPath[1024];
         sprintf(fullPath, "%s/%s", path, entry->d_name);
 
-        if (stat(fullPath, &fileStat) < 0) {
+        if (lstat(fullPath, &fileStat) < 0) {
             printf("Unable to get file stats for: %s\n", fullPath);
             continue;
         }
@@ -63,10 +63,8 @@ void listDir(char *path, int depth) {
                getgrgid(fileStat.st_gid)->gr_name,
                fileStat.st_mode & 0777);
 
-        if (S_ISDIR(fileStat.st_mode)) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                listDir(fullPath, depth + 1);
-            }
+        if (S_ISDIR(fileStat.st_mode) && !S_ISLNK(fileStat.st_mode)) {
+            listDir(fullPath, depth + 1);
         }
     }
 
