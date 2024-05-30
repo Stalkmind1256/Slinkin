@@ -53,6 +53,12 @@ void listDir(char *path, int depth) {
             case S_IFSOCK:
                 printf("Socket");
                 break;
+            case S_IFBLK:  
+				printf("block device\n");
+				break;
+			case S_IFCHR:  
+				printf("character device\n");
+				break;
             default:
                 printf("Unknown");
                 break;
