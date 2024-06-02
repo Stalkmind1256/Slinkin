@@ -8,18 +8,22 @@
 #include <limits.h>
 #include <errno.h>
 
-
 void simpleCopy(char *srcDir, char *destDir) {
     DIR *dirPoint;
     struct dirent *dirEntry;
     struct stat statBuf;
     char srcPath[PATH_MAX], destPath[PATH_MAX];
     
-    if (stat(srcDir, &statBuf) != 0 || mkdir(destDir, statBuf.st_mode) != 0) {
-        perror("Error creating destination directory");
+    if (stat(srcDir, &statBuf) != 0) {
+        perror("Error getting status of source directory");
         return;
     }
 
+    if (mkdir(destDir, statBuf.st_mode) != 0 && errno != EEXIST) {
+        perror("Error creating destination directory");
+        return;
+    }
+    chmod(destDir, statBuf.st_mode); // Ensure the permissions are set correctly
 
     if ((dirPoint = opendir(srcDir)) == NULL) {
         perror("Error opening source directory");
@@ -44,27 +48,45 @@ void simpleCopy(char *srcDir, char *destDir) {
             ssize_t linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
             if (linkSize != -1) {
                 linkPath[linkSize] = '\0';
-                symlink(linkPath, destPath);
+                if(symlink(linkPath, destPath) == -1) {
+                    perror("Error creating symlink");
+                }
             } else {
                 perror("Error reading symlink");
             }
-        } else if (S_ISREG(statBuf.st_mode)) {
+        } else {
             int fileDest = open(destPath, O_WRONLY | O_CREAT | O_TRUNC, statBuf.st_mode);
-            if (fileDest >= 0) close(fileDest);
-            else perror("Error creating file");
+            if (fileDest >= 0) {
+                close(fileDest);
+            } else {
+                perror("Error creating empty file");
+            }
         }
     }
 
     closedir(dirPoint);
 }
 
-int main() {
-    char srcDir[255];
-    printf("Enter the directory to copy: ");
-    scanf("%s", srcDir);
-    simpleCopy(srcDir, "SimpleCopyDir");
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <source directory> <destination directory>\n", argv[0]);
+        return 1;
+    }
 
-    printf("Directory copied successfully.\n");
+
+
+    struct stat srcStat;
+    if (stat(argv[1], &srcStat) == -1) {
+        perror("Error checking source directory");
+        return 1;
+    }
+
+    if (!S_ISDIR(srcStat.st_mode)) {
+        fprintf(stderr, "%s is not a directory.\n", argv[1]);
+        return 1;
+    }
+
+    simpleCopy(argv[1], argv[2]);
 
     return 0;
 }
