@@ -7,6 +7,7 @@
 #include <string.h>
 #include <pwd.h>
 #include <grp.h>
+#include <errno.h>
 
 void listDir(char *path, int depth) {
     DIR *dir = opendir(path);
@@ -14,7 +15,7 @@ void listDir(char *path, int depth) {
     struct stat fileStat;
 
     if (dir == NULL) {
-        printf("Cannot open directory: %s\n", path);
+        perror("Cannot open directory: ");
         return;
     }
 
@@ -27,7 +28,7 @@ void listDir(char *path, int depth) {
         sprintf(fullPath, "%s/%s", path, entry->d_name);
 
         if (lstat(fullPath, &fileStat) < 0) {
-            printf("Unable to get file stats for: %s\n", fullPath);
+            perror("Unable to get file stats");
             continue;
         }
 
@@ -69,7 +70,7 @@ void listDir(char *path, int depth) {
                getgrgid(fileStat.st_gid)->gr_name,
                fileStat.st_mode & 0777);
 
-        if (S_ISDIR(fileStat.st_mode) && !S_ISLNK(fileStat.st_mode)) {
+        if (S_ISDIR(fileStat.st_mode)) {
             listDir(fullPath, depth + 1);
         }
     }
