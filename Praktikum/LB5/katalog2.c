@@ -23,7 +23,7 @@ void simpleCopy(char *srcDir, char *destDir) {
         perror("Error creating destination directory");
         return;
     }
-    chmod(destDir, statBuf.st_mode); // Ensure the permissions are set correctly
+    chmod(destDir, statBuf.st_mode);
 
     if ((dirPoint = opendir(srcDir)) == NULL) {
         perror("Error opening source directory");
@@ -31,7 +31,7 @@ void simpleCopy(char *srcDir, char *destDir) {
     }
 
     while ((dirEntry = readdir(dirPoint)) != NULL) {
-        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..")) continue;
+        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..") || !strcmp(dirEntry->d_name, destDir)) continue;
         
         snprintf(srcPath, PATH_MAX, "%s/%s", srcDir, dirEntry->d_name);
         snprintf(destPath, PATH_MAX, "%s/%s", destDir, dirEntry->d_name);
@@ -45,7 +45,7 @@ void simpleCopy(char *srcDir, char *destDir) {
             simpleCopy(srcPath, destPath);
         } else if (S_ISLNK(statBuf.st_mode)) {
             char linkPath[PATH_MAX];
-            ssize_t linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
+            int linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
             if (linkSize != -1) {
                 linkPath[linkSize] = '\0';
                 if(symlink(linkPath, destPath) == -1) {
@@ -90,4 +90,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
