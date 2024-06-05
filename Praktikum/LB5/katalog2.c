@@ -8,7 +8,7 @@
 #include <limits.h>
 #include <errno.h>
 
-void simpleCopy(char *srcDir, char *destDir) {
+void simpleCopy(char *srcDir, char *destDir, char *ignor) {
     DIR *dirPoint;
     struct dirent *dirEntry;
     struct stat statBuf;
@@ -27,11 +27,12 @@ void simpleCopy(char *srcDir, char *destDir) {
 
     if ((dirPoint = opendir(srcDir)) == NULL) {
         perror("Error opening source directory");
+        printf("\t%s\n",srcDir);
         return;
     }
 
     while ((dirEntry = readdir(dirPoint)) != NULL) {
-        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..") || !strcmp(dirEntry->d_name, destDir)) continue;
+        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..") || !strcmp(dirEntry->d_name, ignor)) continue;
         
         snprintf(srcPath, PATH_MAX, "%s/%s", srcDir, dirEntry->d_name);
         snprintf(destPath, PATH_MAX, "%s/%s", destDir, dirEntry->d_name);
@@ -42,7 +43,7 @@ void simpleCopy(char *srcDir, char *destDir) {
         }
 
         if (S_ISDIR(statBuf.st_mode)) {
-            simpleCopy(srcPath, destPath);
+            simpleCopy(srcPath, destPath,ignor);
         } else if (S_ISLNK(statBuf.st_mode)) {
             char linkPath[PATH_MAX];
             int linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
@@ -56,6 +57,7 @@ void simpleCopy(char *srcDir, char *destDir) {
             }
         } else {
             int fileDest = open(destPath, O_WRONLY | O_CREAT | O_TRUNC, statBuf.st_mode);
+            chmod(destPath, statBuf.st_mode & 0777);
             if (fileDest >= 0) {
                 close(fileDest);
             } else {
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    simpleCopy(argv[1], argv[2]);
+    simpleCopy(argv[1], argv[2], argv[2]);
 
     return 0;
 }
