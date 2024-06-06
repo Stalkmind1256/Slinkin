@@ -13,17 +13,30 @@ void simpleCopy(char *srcDir, char *destDir) {
     struct dirent *dirEntry;
     struct stat statBuf;
     char srcPath[PATH_MAX], destPath[PATH_MAX];
+    mode_t originalPermissions;
     
     if (stat(srcDir, &statBuf) != 0) {
         perror("Error getting status of source directory");
         return;
     }
+    originalPermissions = statBuf.st_mode;
+
 
     if (mkdir(destDir, statBuf.st_mode) != 0 && errno != EEXIST) {
         perror("Error creating destination directory");
         return;
     }
-    chmod(destDir, statBuf.st_mode);
+   
+    
+	 //chmod(destDir,statBuf.st_mode);	
+     //printf("Права доступа к каталогу: %o\n", statBuf.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+	chmod(destDir, 0777); 
+    
+    
+	if (!(statBuf.st_mode & S_IRUSR) || !(statBuf.st_mode & S_IWUSR)) {
+		chmod(destDir, statBuf.st_mode | S_IRUSR | S_IWUSR);
+	}
+
 
     if ((dirPoint = opendir(srcDir)) == NULL) {
         perror("Error opening source directory");
@@ -67,7 +80,13 @@ void simpleCopy(char *srcDir, char *destDir) {
     }
 
     closedir(dirPoint);
+    
+    if (chmod(destDir, originalPermissions) != 0) {
+        perror("Error restoring original permissions of the directory");
+    }
 }
+    
+
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
