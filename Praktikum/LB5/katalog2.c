@@ -8,7 +8,7 @@
 #include <limits.h>
 #include <errno.h>
 
-void simpleCopy(char *srcDir, char *destDir, char *ignor) {
+void simpleCopy(char *srcDir, char *destDir) {
     DIR *dirPoint;
     struct dirent *dirEntry;
     struct stat statBuf;
@@ -32,8 +32,8 @@ void simpleCopy(char *srcDir, char *destDir, char *ignor) {
     }
 
     while ((dirEntry = readdir(dirPoint)) != NULL) {
-        if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..") || !strcmp(dirEntry->d_name, ignor)) continue;
-        
+         if (!strcmp(dirEntry->d_name, ".") || !strcmp(dirEntry->d_name, "..")) continue;
+         
         snprintf(srcPath, PATH_MAX, "%s/%s", srcDir, dirEntry->d_name);
         snprintf(destPath, PATH_MAX, "%s/%s", destDir, dirEntry->d_name);
 
@@ -43,7 +43,7 @@ void simpleCopy(char *srcDir, char *destDir, char *ignor) {
         }
 
         if (S_ISDIR(statBuf.st_mode)) {
-            simpleCopy(srcPath, destPath,ignor);
+            simpleCopy(srcPath, destPath);
         } else if (S_ISLNK(statBuf.st_mode)) {
             char linkPath[PATH_MAX];
             int linkSize = readlink(srcPath, linkPath, PATH_MAX - 1);
@@ -57,7 +57,7 @@ void simpleCopy(char *srcDir, char *destDir, char *ignor) {
             }
         } else {
             int fileDest = open(destPath, O_WRONLY | O_CREAT | O_TRUNC, statBuf.st_mode);
-            chmod(destPath, statBuf.st_mode & 0777);
+            chmod(destPath,statBuf.st_mode);
             if (fileDest >= 0) {
                 close(fileDest);
             } else {
@@ -88,7 +88,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    simpleCopy(argv[1], argv[2], argv[2]);
+    simpleCopy(argv[1], argv[2]);
 
     return 0;
 }
+
