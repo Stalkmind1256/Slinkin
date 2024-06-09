@@ -44,7 +44,10 @@ void parse_logfile(char* filename, statserver* server, int* servercount){
 void update_result_file(char* resultfile, char* argv0, statserver* server, int servercount)
 {
     FILE* block = fopen(argv0,"r");
+    //printf("Попытка блокировки файла %s процессом с PID %d\n", argv0, getpid());
     flock(fileno(block), LOCK_EX);
+    //printf("Файл %s заблокирован процессом с PID %d\n", argv0, getpid());
+    
     FILE* result = fopen(resultfile, "r");
 
     statserver checkresult;
@@ -72,14 +75,16 @@ void update_result_file(char* resultfile, char* argv0, statserver* server, int s
         fprintf(result, "%s: %d\n", server[i].name, server[i].count);
     }
     fclose(result);
+    //printf("Освобождение блокировки файла %s процессом с PID %d\n", argv0, getpid());
     flock(fileno(block), LOCK_EX);
+    //printf("Файл %s освобожден процессом с PID %d\n", argv0, getpid());
     fclose(block);
      free(server);
 }
 
 int main(int argc, char** argv)
 {
-    int i;
+  
     if (argc < 3) {
         printf("Необходимо указать имя файла результата и хотя бы один файл журнала.\n");
         return 1;
@@ -92,12 +97,13 @@ int main(int argc, char** argv)
     fclose(result);
     statserver *server = malloc(50 * sizeof(statserver));
     int servercount=0;
-    for (i = 2; i < argc; i++) {
+    for (int i = 2; i < argc; i++) {
         pid_t pid = fork();
         if (pid < 0) {
             printf("Ошибка создания процесса.\n");
             return 1;
         } else if (pid == 0) {
+			//printf("Обработка файла %s в процессе с PID %d\n",argv[i],getpid());
             parse_logfile (argv[i], server, &servercount);
             update_result_file(argv[1], argv[0], server, servercount);
             return 0;
@@ -105,7 +111,7 @@ int main(int argc, char** argv)
         
     }
 
-    for (i = 2; i < argc; i++){
+    for (int i = 2; i < argc; i++){
 		wait(NULL);
 		}
 	free(server);		
