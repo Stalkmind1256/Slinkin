@@ -41,12 +41,12 @@ void parse_logfile(char* filename, statserver* server, int* servercount){
     fclose(file);
 }
 
-void update_result_file(char* resultfile, char* argv0, statserver* server, int servercount)
+void update_result_file(char* resultfile, char* lock_file, statserver* server, int servercount)
 {
-    FILE* block = fopen(argv0,"r");
-    //printf("Попытка блокировки файла %s процессом с PID %d\n", argv0, getpid());
+    FILE* block = fopen(lock_file,"r");
+    //printf("Попытка блокировки файла %s процессом с PID %d\n", lock_file, getpid());
     flock(fileno(block), LOCK_EX);
-    //printf("Файл %s заблокирован процессом с PID %d\n", argv0, getpid());
+    //printf("Файл %s заблокирован процессом с PID %d\n", lock_file, getpid());
     
     FILE* result = fopen(resultfile, "r");
 
@@ -75,9 +75,9 @@ void update_result_file(char* resultfile, char* argv0, statserver* server, int s
         fprintf(result, "%s: %d\n", server[i].name, server[i].count);
     }
     fclose(result);
-    //printf("Освобождение блокировки файла %s процессом с PID %d\n", argv0, getpid());
+    //printf("Освобождение блокировки файла %s процессом с PID %d\n", lock_file, getpid());
     flock(fileno(block), LOCK_EX);
-    //printf("Файл %s освобожден процессом с PID %d\n", argv0, getpid());
+    //printf("Файл %s освобожден процессом с PID %d\n", lock_file, getpid());
     fclose(block);
      free(server);
 }
@@ -97,6 +97,8 @@ int main(int argc, char** argv)
     fclose(result);
     statserver *server = malloc(50 * sizeof(statserver));
     int servercount=0;
+    
+    char *lock_file = argv[1];
     for (int i = 2; i < argc; i++) {
         pid_t pid = fork();
         if (pid < 0) {
@@ -105,7 +107,7 @@ int main(int argc, char** argv)
         } else if (pid == 0) {
 	    //printf("Обработка файла %s в процессе с PID %d\n",argv[i],getpid());
             parse_logfile (argv[i], server, &servercount);
-            update_result_file(argv[1], argv[0], server, servercount);
+            update_result_file(argv[1], lock_file, server, servercount);
             return 0;
         }
         
