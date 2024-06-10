@@ -13,8 +13,8 @@ typedef struct {
 
 void parse_logfile(char* filename, statserver* server, int* servercount){
     FILE* file = fopen(filename, "r");
-    if (!file) {
-        printf("Не удалось открыть файл %s.\n", filename);
+    if (file == NULL) {
+        printf("Failed to open file %s.\n", filename);
         return;
     }
     char line[4000];
@@ -86,12 +86,12 @@ int main(int argc, char** argv)
 {
   
     if (argc < 3) {
-        printf("Необходимо указать имя файла результата и хотя бы один файл журнала.\n");
+        printf("You must specify the result file name and at least one log file.\n");
         return 1;
     }
     FILE* result = fopen(argv[1], "w");
-    if (!result) {
-        printf("Не удалось открыть файл %s.\n", argv[1]);
+    if (result == NULL) {
+        printf("Failed to open file %s.\n", argv[1]);
         return 1;
     }
     fclose(result);
@@ -100,10 +100,10 @@ int main(int argc, char** argv)
     for (int i = 2; i < argc; i++) {
         pid_t pid = fork();
         if (pid < 0) {
-            printf("Ошибка создания процесса.\n");
+            printf("Error creating process.\n");
             return 1;
         } else if (pid == 0) {
-			//printf("Обработка файла %s в процессе с PID %d\n",argv[i],getpid());
+	    //printf("Обработка файла %s в процессе с PID %d\n",argv[i],getpid());
             parse_logfile (argv[i], server, &servercount);
             update_result_file(argv[1], argv[0], server, servercount);
             return 0;
@@ -112,9 +112,9 @@ int main(int argc, char** argv)
     }
 
     for (int i = 2; i < argc; i++){
-		wait(NULL);
-		}
-	free(server);		
+	wait(NULL);
+	}
+    free(server);		
 
     return 0;
 }
