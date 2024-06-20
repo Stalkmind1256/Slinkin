@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+int pam = 2;
+
 typedef struct {
     char name[50];
     int count;
@@ -13,8 +15,8 @@ typedef struct {
 
 void parse_logfile(char* filename, statserver* server, int* servercount){
     FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Failed to open file %s.\n", filename);
+    if (!file) {
+        printf("Error opening file %s.\n", filename);
         return;
     }
     char line[4000];
@@ -33,21 +35,28 @@ void parse_logfile(char* filename, statserver* server, int* servercount){
             }
         }
         if (!exist) {
-            strcpy(server[*servercount].name, token);
-            server[*servercount].count = 1;
-            (*servercount)++;
+            if (*servercount < pam) {
+                strcpy(server[*servercount].name, token);
+                server[*servercount].count = 1;
+                (*servercount)++;
+            } else {
+                server = realloc(server, (pam) * 1.5 * sizeof(statserver));
+                pam = pam * 1.5;
+                strcpy(server[*servercount].name, token);
+                server[*servercount].count = 1;
+                (*servercount)++;
+            }	
         }
     }
     fclose(file);
 }
 
-void update_result_file(char* resultfile, char* lock_file, statserver* server, int servercount)
+void update_result_file(char* resultfile, char* sourse, statserver* server, int servercount)
 {
-    FILE* block = fopen(lock_file,"r");
-    //printf("Попытка блокировки файла %s процессом с PID %d\n", lock_file, getpid());
+    FILE* block = fopen(sourse,"r");
+    //printf("Попытка блокировки файла %s процессом с PID %d\n", sourse, getpid());
     flock(fileno(block), LOCK_EX);
-    //printf("Файл %s заблокирован процессом с PID %d\n", lock_file, getpid());
-    
+    //printf("Файл %s заблокирован процессом с PID %d\n", sourse, getpid());
     FILE* result = fopen(resultfile, "r");
 
     statserver checkresult;
@@ -61,62 +70,73 @@ void update_result_file(char* resultfile, char* lock_file, statserver* server, i
             }
 
         }
-        if(!exist){
-
+        
+       if(!exist){
+        if (servercount < pam) {
             strcpy(server[servercount].name,checkresult.name);
             server[servercount].count = checkresult.count;
             servercount++;
-        }else{
-            server[i].count += checkresult.count;
+        } else {
+            server = realloc(server, (pam) * 1.5 * sizeof(statserver));
+            pam = pam * 1.5;
+            if (server == NULL) {
+                perror("realloc");
+                exit(EXIT_FAILURE);
+            }
+            strcpy(server[servercount].name,checkresult.name);
+            server[servercount].count = checkresult.count;
+            servercount++;
         }
+    }else{
+        server[i].count += checkresult.count;
     }
+}
     result = freopen(resultfile,"w",result);
     for (int i = 0; i < servercount; i++) {
         fprintf(result, "%s: %d\n", server[i].name, server[i].count);
     }
     fclose(result);
-    //printf("Освобождение блокировки файла %s процессом с PID %d\n", lock_file, getpid());
+    //free(server);
     flock(fileno(block), LOCK_EX);
-    //printf("Файл %s освобожден процессом с PID %d\n", lock_file, getpid());
     fclose(block);
-     free(server);
+    
 }
 
 int main(int argc, char** argv)
 {
-  
+    int i;
     if (argc < 3) {
         printf("You must specify the result file name and at least one log file.\n");
         return 1;
     }
     FILE* result = fopen(argv[1], "w");
-    if (result == NULL) {
-        printf("Failed to open file %s.\n", argv[1]);
+    if (!result) {
+        printf("Error opening file %s.\n", argv[1]);
         return 1;
     }
     fclose(result);
-    statserver *server = malloc(50 * sizeof(statserver));
+
     int servercount=0;
-    
-    char *lock_file = argv[1];
-    for (int i = 2; i < argc; i++) {
+
+    for (i = 2; i < argc; i++) {
         pid_t pid = fork();
         if (pid < 0) {
-            printf("Error creating process.\n");
+            printf("Error create process.\n");
             return 1;
         } else if (pid == 0) {
-	    //printf("Обработка файла %s в процессе с PID %d\n",argv[i],getpid());
+            statserver *server = malloc(pam * sizeof(statserver));
+                            //printf("%d\n",pam); 
             parse_logfile (argv[i], server, &servercount);
-            update_result_file(argv[1], lock_file, server, servercount);
+            update_result_file(argv[1], argv[0], server, servercount);
+            free(server);
             return 0;
         }
         
     }
 
-    for (int i = 2; i < argc; i++){
-	wait(NULL);
-	}
-    free(server);		
+    for (i = 2; i < argc; i++){
+  wait(NULL);
+  }
 
     return 0;
 }
