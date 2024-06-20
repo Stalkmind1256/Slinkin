@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int pam = 3;
+int pam = 4;
 
 typedef struct {
     char name[50];
@@ -39,7 +39,7 @@ void parse_logfile(char* filename, statserver** server, int* servercount, int* p
         }
         if (!exist) {
             if (*servercount >= *pam) {
-                *pam = *pam * 1.5;
+                *pam = *pam * 1.5;	
                 statserver* temp = realloc(*server, (*pam) * sizeof(statserver));
                 if (!temp) {
                     perror("Memory allocation error");
@@ -49,10 +49,10 @@ void parse_logfile(char* filename, statserver** server, int* servercount, int* p
                     return;
                 }
                 *server = temp;
-                printf("Memory reallocated: %d elements (%lu bytes)\n", *pam, (*pam) * sizeof(statserver));
+                //printf("Memory reallocated: %d elements (%lu bytes)\n", *pam, (*pam) * sizeof(statserver));
             }
             strncpy((*server)[*servercount].name, token, sizeof((*server)[*servercount].name) - 1);
-            (*server)[*servercount].name[sizeof((*server)[*servercount].name) - 1] = '\0'; // Обеспечиваем нуль-терминатор
+            (*server)[*servercount].name[sizeof((*server)[*servercount].name) - 1] = '\0';
             (*server)[*servercount].count = 1;
             (*servercount)++;
         }
@@ -60,17 +60,19 @@ void parse_logfile(char* filename, statserver** server, int* servercount, int* p
     fclose(file);
 }
 
-void update_result_file(char* resultfile, statserver** server, int* servercount, int* pam) {
-    FILE* result = fopen(resultfile, "r+");
+void update_result_file(char* resultfile, char* argv0, statserver** server, int* servercount, int* pam) {
+    
+    FILE *block = fopen(argv0,"r");
+    flock(fileno(block),LOCK_EX);
+    
+    FILE* result = fopen(resultfile, "r");
     if (!result) {
         perror("Error opening result file");
         return;
     }
 
-    flock(fileno(result), LOCK_EX);
-
     statserver checkresult;
-    while (fscanf(result, "%49[^:]: %d\n", checkresult.name, &checkresult.count) == 2) {
+    while (fscanf(result, "%[^:]: %d\n", checkresult.name, &checkresult.count) == 2) {
         int exist = 0;
         for (int i = 0; i < *servercount; i++) {
             if (strcmp(checkresult.name, (*server)[i].name) == 0) {
@@ -86,14 +88,12 @@ void update_result_file(char* resultfile, statserver** server, int* servercount,
                 statserver* temp = realloc(*server, (*pam) * sizeof(statserver));
                 if (!temp) {
                     perror("Memory allocation error");
-                    flock(fileno(result), LOCK_UN);
                     fclose(result);
                     free(*server);
                     *server = NULL;
                     return;
                 }
                 *server = temp;
-                //printf("Memory reallocated: %d elements (%lu bytes)\n", *pam, (*pam) * sizeof(statserver));
             }
             strncpy((*server)[*servercount].name, checkresult.name, sizeof((*server)[*servercount].name) - 1);
             (*server)[*servercount].name[sizeof((*server)[*servercount].name) - 1] = '\0';
@@ -102,20 +102,20 @@ void update_result_file(char* resultfile, statserver** server, int* servercount,
         }
     }
 
-    result = freopen(resultfile, "w", result); // Повторно открыть файл для записи
+    result = freopen(resultfile, "w", result);
     if (!result) {
         perror("Error reopening result file");
-        flock(fileno(result), LOCK_UN);
         return;
     }
 
     for (int i = 0; i < *servercount; i++) {
         fprintf(result, "%s: %d\n", (*server)[i].name, (*server)[i].count);
     }
-
-    flock(fileno(result), LOCK_UN);
     fclose(result);
+    flock(fileno(block), LOCK_UN);
+    fclose(block);
 }
+
 
 int main(int argc, char** argv) {
     if (argc < 3) {
@@ -130,6 +130,8 @@ int main(int argc, char** argv) {
     }
     fclose(result);
 
+
+
     for (int i = 2; i < argc; i++) {
         pid_t pid = fork();
         if (pid < 0) {
@@ -137,15 +139,14 @@ int main(int argc, char** argv) {
             return 1;
         } else if (pid == 0) {
             int servercount = 0;
-            int pam = 3;
             statserver* server = malloc(pam * sizeof(statserver));
             if (!server) {
                 perror("Memory allocation error");
                 return 1;
             }
-            printf("Memory allocated: %d elements (%lu bytes)\n", pam, pam * sizeof(statserver));
+            //printf("Memory allocated: %d elements (%lu bytes)\n", pam, pam * sizeof(statserver));
             parse_logfile(argv[i], &server, &servercount, &pam);
-            update_result_file(argv[1], &server, &servercount, &pam);
+            update_result_file(argv[1], argv[0], &server, &servercount, &pam);
             free(server);
             return 0;
         }
@@ -155,5 +156,6 @@ int main(int argc, char** argv) {
         wait(NULL);
     }
 
+    
     return 0;
 }
