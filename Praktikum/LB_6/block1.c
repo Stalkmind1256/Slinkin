@@ -3,109 +3,83 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#define MAX_LINE 1024
+#define MAX_BUF 1024
 #define MAX_UNAME 100
 #define MAX_GNAME 100
-#define MAX_MEMBERS 257
+#define SHELL_INFO 100
+#define MAX_SHELLS 100
 
-void find_group_members(char *username) {
-    FILE *passwd, *group;
-    char buf[MAX_LINE];
+void find_group_members(char *username){
+    FILE *passwd, *shell;
+    char buf[MAX_BUF];
     char uname[MAX_UNAME];
-    char gname[MAX_GNAME];
-    char members[MAX_LINE];
-    int uid, gid;
-    int ngroups = 0;
-    int nusers = 0;
-    int user_gid = -1;
-    char *groups[100]; 
-    char *users[100]; 
-    int user_uids[100];
-    int user_gids[100]; 
+    char shellBuf[SHELL_INFO];
+    char shells[MAX_SHELLS][SHELL_INFO];
+    int uid,gid;
+    int num_shells = 0;
 
-    passwd = fopen("/etc/passwd", "r");
-    if (passwd == NULL) {
+    passwd = fopen("/home/andrey/Рабочий стол/gruppp/passwd","r");
+    if(passwd == NULL){
         perror("error opening file");
-        return;
     }
 
+    shell = fopen("/home/andrey/Рабочий стол/gruppp/shells","r");
+    if(shell == NULL){
+        perror("error opening file");
+    }
+    
+    while(fgets(buf,sizeof(buf),shell) != NULL){
+        strtok(buf, "\n");
+        strncpy(shells[num_shells], buf, SHELL_INFO);
+        printf("Shell %d: %s\n", num_shells, shells[num_shells]);
+        num_shells++;
+    }
+    fclose(shell);
 
-    while (fgets(buf, sizeof(buf), passwd) != NULL) {
-        sscanf(buf, "%[^:]:%*[^:]:%d:%d", uname, &uid, &gid);
-        if (strcmp(uname, username) == 0) {
-            user_gid = gid;
-            printf("%s is a %s user\n", username, uid < 1000 ? "system" : "real");
+    while(fgets(buf,sizeof(buf),passwd) != NULL){
+        char *line = strdup(buf); 
+        char *token = strtok(line, ":");
+        int field = 0;
+        while (token != NULL) {
+            if (field == 0) {
+                strncpy(uname, token, MAX_UNAME);
+            } else if (field == 2) {
+                uid = atoi(token);
+            } else if (field == 3) {
+                gid = atoi(token);
+            }
+            token = strtok(NULL, ":");
+            field++;
         }
-        users[nusers] = strdup(uname);
-        user_uids[nusers] = uid;
-        user_gids[nusers] = gid;
-        nusers++;
+        
+        char *last_colon = strrchr(buf, ':');
+        if (last_colon != NULL) {
+            strncpy(shellBuf, last_colon + 1, SHELL_INFO);
+            shellBuf[strcspn(shellBuf, "\n")] = 0; 
+        }
+
+        if(strcmp(uname,username) == 0){
+            printf("username: %s\n",uname);
+            printf("uid: %d\n",uid);
+            printf("gid: %d\n",gid);
+            printf("shell: %s\n",shellBuf);
+            int is_service_user = 1;
+            for (int i = 0; i < num_shells; i++) {
+                if (strcmp(shellBuf, shells[i]) == 0) {
+                    is_service_user = 0;
+                    break;
+                }
+            }
+            if (is_service_user) {
+                printf("This is a service user.\n");
+            } else {
+                printf("This is a real user.\n");
+            }
+        }
+        free(line);
     }
     fclose(passwd);
-
-    if (user_gid == -1) {
-        printf("User %s not found.\n", username);
-        return;
-    }
-
-    group = fopen("/etc/group", "r");
-    if (group == NULL) {
-        perror("error opening file");
-        return;
-    }
-
-
-    while (fgets(buf, sizeof(buf), group) != NULL) {
-        sscanf(buf, "%[^:]:%*[^:]:%*d:%[^\n]", gname, members);
-        if (strstr(members, username) != NULL) {
-            groups[ngroups++] = strdup(gname);
-        } else if (strstr(members, "*") == NULL) {
-            char *member = strtok(members, ",");
-            while (member != NULL) {
-                if (strcmp(member, username) == 0) {
-                    groups[ngroups++] = strdup(gname);
-                    break;
-                }
-                member = strtok(NULL, ",");
-            }
-        }
-    }
-    fclose(group);
-
-    printf("Groups: \n");
-    for (int i = 0; i < ngroups; i++) {
-        printf("%s\n", groups[i]);
-    }
-
-
-    printf("\nGroup members:\n");
-    for (int i = 0; i < nusers; i++) {
-        for (int j = 0; j < ngroups; j++) {
-            group = fopen("/etc/group", "r");
-            if (group == NULL) {
-                perror("error opening file");
-                return;
-            }
-
-            while (fgets(buf, sizeof(buf), group) != NULL) {
-                sscanf(buf, "%[^:]:%*[^:]:%*d:%[^\n]", gname, members);
-                if (strcmp(gname, groups[j]) == 0 && (strstr(members, users[i]) != NULL || user_gids[i] == user_gid)) {
-                    printf("%s is a %s user\n", users[i], user_uids[i] < 1000 ? "system" : "real");
-                    break;
-                }
-            }
-            fclose(group);
-        }
-    }
-
-    for (int i = 0; i < ngroups; i++) {
-        free(groups[i]);
-    }
-
-    for (int i = 0; i < nusers; i++) {
-        free(users[i]);
-    }
-}
+}   
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -116,4 +90,4 @@ int main(int argc, char *argv[]) {
     find_group_members(argv[1]);
 
     return 0;
-}
+} 
