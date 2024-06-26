@@ -22,19 +22,19 @@ void find_group_members(char *username) {
     char unique_members[MAX_MEMBERS][MAX_UNAME];
     int num_unique_members = 0;
 
-    passwd = fopen("/home/andrey/Рабочий стол/gruppp/passwd", "r");
+    passwd = fopen("/home/maks/Рабочий стол/test1/passwd", "r");
     if (passwd == NULL) {
         return;
     }
 
-    group = fopen("/home/andrey/Рабочий стол/gruppp/group", "r");
+    group = fopen("/home/maks/Рабочий стол/test1/group", "r");
     if (group == NULL) {
         fclose(passwd);
         return;
     }
 
     // Read valid shells
-    FILE *shell = fopen("/home/andrey/Рабочий стол/gruppp/shells", "r");
+    FILE *shell = fopen("/home/maks/Рабочий стол/test1/shells", "r");
     if (shell == NULL) {
         fclose(passwd);
         fclose(group);
@@ -98,7 +98,7 @@ void find_group_members(char *username) {
 
         if (group_gid == gid || (group_members && strstr(group_members, username))) {
             // Find all group members
-            FILE *passwd2 = fopen("/home/andrey/Рабочий стол/gruppp/passwd", "r");
+            FILE *passwd2 = fopen("/home/maks/Рабочий стол/test1/passwd", "r");
             if (passwd2 == NULL) {
                 free(group_line);
                 fclose(group);
@@ -140,7 +140,8 @@ void find_group_members(char *username) {
                             break;
                         }
                     }
-                    if (!is_duplicate) {
+                    // Exclude the input user from the list
+                    if (!is_duplicate && strcmp(member_name, username) != 0) {
                         strncpy(unique_members[num_unique_members], member_name, MAX_UNAME);
                         num_unique_members++;
 
